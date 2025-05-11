@@ -196,7 +196,6 @@
             listViewArtists.UseCompatibleStateImageBehavior = false;
             listViewArtists.View = View.Tile;
             listViewArtists.DrawItem += listViewArtists_DrawItem;
-            listViewArtists.SelectedIndexChanged += listViewArtists_SelectedIndexChanged;
             // 
             // imageListArtists
             // 

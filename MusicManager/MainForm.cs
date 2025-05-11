@@ -139,9 +139,32 @@ namespace MusicManager
             }
         }
 
-        private void listViewArtists_SelectedIndexChanged(object sender, EventArgs e)
+        private void listViewArtists_DrawItem(object sender, DrawListViewItemEventArgs e)
         {
+            var artist = artists.FirstOrDefault(a => a.Id.ToString() == e.Item.ImageKey);
+            if (artist == null) return;
 
+            Font nameFont = new Font("Segoe UI", 10, FontStyle.Bold);
+            Color textColor = Color.White;
+
+            Color backColor = e.Item.Selected ? Color.FromArgb(100, 100, 100) : e.Item.BackColor;
+            e.Graphics.FillRectangle(new SolidBrush(backColor), e.Bounds);
+
+            if (e.Item.Selected)
+            {
+                Rectangle borderRect = e.Bounds;
+                borderRect.Inflate(-1, -1);
+                using Pen borderPen = new Pen(Color.White, 2);
+                e.Graphics.DrawRectangle(borderPen, borderRect);
+            }
+
+            Image img = imageListArtists.Images[e.Item.ImageKey];
+            Rectangle imageRect = new Rectangle(e.Bounds.X + 5, e.Bounds.Y + 5, 64, 64);
+            e.Graphics.DrawImage(img, imageRect);
+
+            int textX = imageRect.Right + 10;
+            int textY = imageRect.Top + 20;
+            e.Graphics.DrawString(artist.Name, nameFont, new SolidBrush(textColor), new PointF(textX, textY));
         }
 
         private void RefreshArtistList()
@@ -326,34 +349,6 @@ namespace MusicManager
 
             e.Graphics.DrawString(song.Title, titleFont, new SolidBrush(textColor), new PointF(textX, textY));
             e.Graphics.DrawString(artist.Name, artistFont, new SolidBrush(Color.LightGray), new PointF(textX, textY + 22));
-        }
-
-        private void listViewArtists_DrawItem(object sender, DrawListViewItemEventArgs e)
-        {
-            var artist = artists.FirstOrDefault(a => a.Id.ToString() == e.Item.ImageKey);
-            if (artist == null) return;
-
-            Font nameFont = new Font("Segoe UI", 10, FontStyle.Bold);
-            Color textColor = Color.White;
-
-            Color backColor = e.Item.Selected ? Color.FromArgb(100, 100, 100) : e.Item.BackColor;
-            e.Graphics.FillRectangle(new SolidBrush(backColor), e.Bounds);
-
-            if (e.Item.Selected)
-            {
-                Rectangle borderRect = e.Bounds;
-                borderRect.Inflate(-1, -1);
-                using Pen borderPen = new Pen(Color.White, 2);
-                e.Graphics.DrawRectangle(borderPen, borderRect);
-            }
-
-            Image img = imageListArtists.Images[e.Item.ImageKey];
-            Rectangle imageRect = new Rectangle(e.Bounds.X + 5, e.Bounds.Y + 5, 64, 64);
-            e.Graphics.DrawImage(img, imageRect);
-
-            int textX = imageRect.Right + 10;
-            int textY = imageRect.Top + 20;
-            e.Graphics.DrawString(artist.Name, nameFont, new SolidBrush(textColor), new PointF(textX, textY));
         }
 
         private void SaveData()
