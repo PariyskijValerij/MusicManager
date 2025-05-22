@@ -1,6 +1,6 @@
 ﻿namespace MusicManager
 {
-    partial class AddSongForm
+    partial class AddAlbumForm
     {
         /// <summary>
         /// Required designer variable.
@@ -31,14 +31,11 @@
             label1 = new Label();
             txtTitle = new TextBox();
             label2 = new Label();
-            comboArtist = new ComboBox();
-            label3 = new Label();
-            numericYear = new NumericUpDown();
             pictureBoxImage = new PictureBox();
             btnChooseImage = new Button();
-            btnOK = new Button();
             btnCancel = new Button();
-            ((System.ComponentModel.ISupportInitialize)numericYear).BeginInit();
+            btnOK = new Button();
+            comboArtist = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).BeginInit();
             SuspendLayout();
             // 
@@ -71,46 +68,13 @@
             label2.TabIndex = 2;
             label2.Text = "Artist";
             // 
-            // comboArtist
-            // 
-            comboArtist.BackColor = Color.FromArgb(35, 35, 35);
-            comboArtist.ForeColor = Color.White;
-            comboArtist.FormattingEnabled = true;
-            comboArtist.Location = new Point(12, 89);
-            comboArtist.Name = "comboArtist";
-            comboArtist.Size = new Size(148, 23);
-            comboArtist.TabIndex = 3;
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Font = new Font("Segoe UI", 12F);
-            label3.Location = new Point(10, 121);
-            label3.Name = "label3";
-            label3.Size = new Size(40, 21);
-            label3.TabIndex = 4;
-            label3.Text = "Year";
-            // 
-            // numericYear
-            // 
-            numericYear.BackColor = Color.FromArgb(35, 35, 35);
-            numericYear.Font = new Font("Segoe UI", 9F);
-            numericYear.ForeColor = Color.White;
-            numericYear.Location = new Point(11, 145);
-            numericYear.Maximum = new decimal(new int[] { 2100, 0, 0, 0 });
-            numericYear.Minimum = new decimal(new int[] { 1900, 0, 0, 0 });
-            numericYear.Name = "numericYear";
-            numericYear.Size = new Size(148, 23);
-            numericYear.TabIndex = 5;
-            numericYear.Value = new decimal(new int[] { 1900, 0, 0, 0 });
-            // 
             // pictureBoxImage
             // 
             pictureBoxImage.Location = new Point(190, 40);
             pictureBoxImage.Name = "pictureBoxImage";
             pictureBoxImage.Size = new Size(180, 180);
             pictureBoxImage.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBoxImage.TabIndex = 6;
+            pictureBoxImage.TabIndex = 4;
             pictureBoxImage.TabStop = false;
             // 
             // btnChooseImage
@@ -119,21 +83,10 @@
             btnChooseImage.Location = new Point(11, 197);
             btnChooseImage.Name = "btnChooseImage";
             btnChooseImage.Size = new Size(149, 23);
-            btnChooseImage.TabIndex = 7;
+            btnChooseImage.TabIndex = 5;
             btnChooseImage.Text = "Chose image";
             btnChooseImage.UseVisualStyleBackColor = false;
             btnChooseImage.Click += btnChooseImage_Click;
-            // 
-            // btnOK
-            // 
-            btnOK.BackColor = Color.FromArgb(35, 35, 35);
-            btnOK.Location = new Point(190, 284);
-            btnOK.Name = "btnOK";
-            btnOK.Size = new Size(75, 23);
-            btnOK.TabIndex = 8;
-            btnOK.Text = "Confirm";
-            btnOK.UseVisualStyleBackColor = false;
-            btnOK.Click += btnOK_Click;
             // 
             // btnCancel
             // 
@@ -142,33 +95,50 @@
             btnCancel.Location = new Point(85, 284);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(75, 23);
-            btnCancel.TabIndex = 9;
+            btnCancel.TabIndex = 10;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = false;
+            btnCancel.Click += btnCancel_Click;
             // 
-            // AddSongForm
+            // btnOK
+            // 
+            btnOK.BackColor = Color.FromArgb(35, 35, 35);
+            btnOK.Location = new Point(190, 284);
+            btnOK.Name = "btnOK";
+            btnOK.Size = new Size(75, 23);
+            btnOK.TabIndex = 11;
+            btnOK.Text = "Confirm";
+            btnOK.UseVisualStyleBackColor = false;
+            btnOK.Click += btnOK_Click;
+            // 
+            // comboArtist
+            // 
+            comboArtist.BackColor = Color.FromArgb(35, 35, 35);
+            comboArtist.ForeColor = Color.White;
+            comboArtist.FormattingEnabled = true;
+            comboArtist.Location = new Point(12, 90);
+            comboArtist.Name = "comboArtist";
+            comboArtist.Size = new Size(148, 23);
+            comboArtist.TabIndex = 12;
+            // 
+            // AddAlbumForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(30, 30, 30);
+            BackColor = Color.FromArgb(35, 35, 35);
             ClientSize = new Size(391, 319);
-            Controls.Add(btnCancel);
+            Controls.Add(comboArtist);
             Controls.Add(btnOK);
+            Controls.Add(btnCancel);
             Controls.Add(btnChooseImage);
             Controls.Add(pictureBoxImage);
-            Controls.Add(numericYear);
-            Controls.Add(label3);
-            Controls.Add(comboArtist);
             Controls.Add(label2);
             Controls.Add(txtTitle);
             Controls.Add(label1);
             ForeColor = Color.White;
-            FormBorderStyle = FormBorderStyle.FixedDialog;
-            Name = "AddSongForm";
+            Name = "AddAlbumForm";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "AddSong";
-            Load += AddSongForm_Load;
-            ((System.ComponentModel.ISupportInitialize)numericYear).EndInit();
+            Text = "AddAlbum";
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -179,12 +149,10 @@
         private Label label1;
         private TextBox txtTitle;
         private Label label2;
-        private ComboBox comboArtist;
-        private Label label3;
-        private NumericUpDown numericYear;
         private PictureBox pictureBoxImage;
         private Button btnChooseImage;
-        private Button btnOK;
         private Button btnCancel;
+        private Button btnOK;
+        private ComboBox comboArtist;
     }
 }

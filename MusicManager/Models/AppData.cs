@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MusicManager.Models
+﻿namespace MusicManager.Models
 {
     public class AppData
     {
@@ -13,5 +7,8 @@ namespace MusicManager.Models
         public List<Song> Songs { get; set; }
         public int ArtistIdCounter { get; set; }
         public int SongIdCounter { get; set; }
+        public List<Album> Albums { get; set; }
+        public List<AlbumSongLink> AlbumSongLinks { get; set; }
+        public int AlbumIdCounter { get; set; }
     }
 }

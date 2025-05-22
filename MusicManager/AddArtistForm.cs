@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using MusicManager.Models;
 
 namespace MusicManager
 {
@@ -25,6 +17,22 @@ namespace MusicManager
             if (File.Exists(defaultPath))
             {
                 pictureBoxArtist.Image = new Bitmap(defaultPath);
+            }
+        }
+
+        public AddArtistForm(Artist artistToEdit)
+        {
+            InitializeComponent();
+
+            txtArtistName.Text = artistToEdit.Name;
+            selectedImagePath = artistToEdit.ImagePath;
+
+            if (File.Exists(selectedImagePath))
+            {
+                using (var img = Image.FromFile(selectedImagePath))
+                {
+                    pictureBoxArtist.Image = new Bitmap(selectedImagePath);
+                }
             }
         }
 
@@ -49,6 +57,17 @@ namespace MusicManager
 
             this.DialogResult = DialogResult.OK;
             this.Close();
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
+        }
+
+        private void AddArtistForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

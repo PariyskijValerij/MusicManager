@@ -95,6 +95,7 @@
             btnCancel.TabIndex = 5;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = false;
+            btnCancel.Click += btnCancel_Click;
             // 
             // AddArtistForm
             // 
@@ -111,7 +112,8 @@
             ForeColor = Color.White;
             Name = "AddArtistForm";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "AddArtistForm";
+            Text = "AddArtist";
+            Load += AddArtistForm_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBoxArtist).EndInit();
             ResumeLayout(false);
             PerformLayout();

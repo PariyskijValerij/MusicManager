@@ -1,13 +1,4 @@
 ﻿using MusicManager.Models;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace MusicManager
 {
@@ -25,7 +16,36 @@ namespace MusicManager
         {
             InitializeComponent();
             this.artists = artists;
-            this.Load += AddSongForm_Load;
+
+            string defaultPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "default_song.png");
+            if (File.Exists(defaultPath))
+            {
+                pictureBoxImage.Image = new Bitmap(defaultPath);
+            }
+        }
+
+        public AddSongForm(List<Artist> artists, Song songToEdit)
+        {
+            InitializeComponent();
+            this.artists = artists;
+
+            comboArtist.DataSource = artists;
+            comboArtist.DisplayMember = "Name";
+            comboArtist.ValueMember = "Id";
+
+            txtTitle.Text = songToEdit.Title;
+            numericYear.Value = songToEdit.Year;
+            selectedImagePath = songToEdit.ImagePath;
+
+            if (File.Exists(selectedImagePath))
+            {
+                using (var img = Image.FromFile(selectedImagePath))
+                {
+                    pictureBoxImage.Image = new Bitmap(img);
+                }
+            }
+
+            comboArtist.SelectedValue = songToEdit.ArtistId;
         }
 
         private void AddSongForm_Load(object sender, EventArgs e)
@@ -33,12 +53,6 @@ namespace MusicManager
             comboArtist.DataSource = artists;
             comboArtist.DisplayMember = "Name";
             comboArtist.ValueMember = "Id";
-
-            string defaultPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "default_song.png");
-            if (File.Exists(defaultPath))
-            {
-                pictureBoxImage.Image = new Bitmap(defaultPath);
-            }
         }
 
         private void btnChooseImage_Click(object sender, EventArgs e)
@@ -61,7 +75,7 @@ namespace MusicManager
                 return;
             }
 
-            if(comboArtist.SelectedItem == null)
+            if (comboArtist.SelectedItem == null)
             {
                 MessageBox.Show("Please select an artist.");
                 return;
