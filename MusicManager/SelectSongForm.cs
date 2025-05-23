@@ -103,10 +103,89 @@ namespace MusicManager
             e.Graphics.DrawString(song.Year.ToString(), yearFont, new SolidBrush(Color.Silver), new PointF(textX, textY + 40));
         }
 
+        private void btnFilterSongs_Click(object sender, EventArgs e)
+        {
+            var filterForm = new SongsFilterForm(artists);
+            while (true)
+            {
+                if (filterForm.ShowDialog() != DialogResult.OK)
+                {
+                    break;
+                }
+
+                var filteredSongs = songs.AsEnumerable();
+
+                if (!string.IsNullOrEmpty(filterForm.SongTitle))
+                {
+                    filteredSongs = filteredSongs.Where(s => s.Title.Contains(filterForm.SongTitle, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (filterForm.SelectedArtistId.HasValue)
+                {
+                    filteredSongs = filteredSongs.Where(s => s.ArtistId == filterForm.SelectedArtistId.Value);
+                }
+
+                if (filterForm.YearMin.HasValue)
+                {
+                    filteredSongs = filteredSongs.Where(s => s.Year >= filterForm.YearMin.Value);
+                }
+
+                if (filterForm.YearMax.HasValue)
+                {
+                    filteredSongs = filteredSongs.Where(s => s.Year <= filterForm.YearMax.Value);
+                }
+
+                if (!filteredSongs.Any())
+                {
+                    filterForm.ShowError("Nothing Found");
+                    continue;
+                }
+
+                listViewSongs.Items.Clear();
+
+                foreach (var song in filteredSongs.OrderBy(s => s.Title))
+                {
+                    var artist = artists.FirstOrDefault(a => a.Id == song.ArtistId);
+                    if (artist == null) continue;
+
+                    string imageKey = song.Id.ToString();
+                    string imagePath = File.Exists(song.ImagePath) ? song.ImagePath :
+                        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "default_song.png");
+
+                    if (!imageListSongs.Images.ContainsKey(imageKey))
+                    {
+                        try
+                        {
+                            using (var temp = Image.FromFile(imagePath))
+                            {
+                                imageListSongs.Images.Add(imageKey, new Bitmap(temp));
+                            }
+                        }
+                        catch
+                        {
+                            using (var temp = Image.FromFile("Images/default_song.png"))
+                            {
+                                imageListSongs.Images.Add(imageKey, new Bitmap(temp));
+                            }
+                        }
+                    }
+
+                    var item = new ListViewItem
+                    {
+                        Text = "",
+                        ImageKey = imageKey,
+                        Tag = song.Id
+                    };
+
+                    listViewSongs.Items.Add(item);
+                }
+                break;
+            }
+        }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            if(listViewSongs.SelectedItems.Count == 0)
+            if (listViewSongs.SelectedItems.Count == 0)
             {
                 MessageBox.Show("Please select a song.");
                 return;

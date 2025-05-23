@@ -25,7 +25,6 @@ namespace MusicManager
         private void MainForm_Load(object sender, EventArgs e)
         {
             listViewArtists.LargeImageList = imageListArtists;
-
             LoadData();
         }
 
@@ -41,6 +40,7 @@ namespace MusicManager
 
         private void btnAddArtist_Click(object sender, EventArgs e)
         {
+            listViewArtists.SelectedItems.Clear();
             var form = new AddArtistForm();
 
             if (form.ShowDialog() == DialogResult.OK)
@@ -54,7 +54,7 @@ namespace MusicManager
                     Directory.CreateDirectory(imagesFolder);
 
                     string newFileName = $"artist_{artistIdCounter}" + Path.GetExtension(form.ImagePath);
-                    string newPath = Path.Combine(imagesFolder + newFileName);
+                    string newPath = Path.Combine(imagesFolder, newFileName);
 
                     File.Copy(form.ImagePath, newPath, true);
                     imageFileName = newPath;
@@ -69,8 +69,10 @@ namespace MusicManager
 
                 artists.Add(artist);
                 artistSongs[artist.Id] = new List<string>();
+                artistIdCounter++;
 
                 RefreshArtistList();
+                RefreshSongList();
                 SaveData();
             }
         }
@@ -79,6 +81,7 @@ namespace MusicManager
         {
             if (listViewArtists.SelectedItems.Count == 0)
             {
+                MessageBox.Show("Please select an artist to delete.");
                 return;
             }
 
@@ -89,11 +92,36 @@ namespace MusicManager
 
             if (artistToRemove != null)
             {
+                var confirm = MessageBox.Show(
+                    $"Do you really want to remove the artist \"{artistToRemove.Name}\"?",
+                    "Confirm",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                if (confirm != DialogResult.Yes)
+                    return;
+
+                confirm = MessageBox.Show(
+    $"All his songs will also be deleted \"{artistToRemove.Name}\"?",
+    "Confirm",
+    MessageBoxButtons.YesNo,
+    MessageBoxIcon.Warning);
+
+                if (confirm != DialogResult.Yes)
+                    return;
+
+                var removedSongIds = songs.Where(s => s.ArtistId == selectedId).Select(s => s.Id).ToList();
+                songs.RemoveAll(s => s.ArtistId == selectedId);
+                albumSongLinks.RemoveAll(link => removedSongIds.Contains(link.SongId));
+
                 artists.Remove(artistToRemove);
                 artistSongs.Remove(selectedId);
-                RefreshArtistList();
             }
 
+            listViewArtistSongs.Items.Clear();
+            imageListArtists.Images.Clear();
+            RefreshArtistList();
+            RefreshSongList();
             SaveData();
         }
 
@@ -101,6 +129,7 @@ namespace MusicManager
         {
             if (listViewArtists.SelectedItems.Count == 0)
             {
+                MessageBox.Show("Please select an artist to edit.");
                 return;
             }
 
@@ -136,6 +165,53 @@ namespace MusicManager
                 RefreshArtistList();
                 SaveData();
             }
+        }
+
+        private void btnFilterArtists_Click(object sender, EventArgs e)
+        {
+            string filter = txtArtistFilter.Text.Trim();
+            listViewArtists.Items.Clear();
+            imageListArtists.Images.Clear();
+
+            var filteredArtists = string.IsNullOrEmpty(filter) ?
+                artists : artists.Where(a => a.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            foreach (var artist in filteredArtists)
+            {
+                string path = File.Exists(artist.ImagePath)
+                    ? artist.ImagePath
+                    : "Images/default_artist.png";
+
+                try
+                {
+                    using (var temp = Image.FromFile(path))
+                    {
+                        imageListArtists.Images.Add(artist.Id.ToString(), new Bitmap(temp));
+                    }
+                }
+                catch
+                {
+                    using (var temp = Image.FromFile("Images/default_artist.png"))
+                    {
+                        imageListArtists.Images.Add(artist.Id.ToString(), new Bitmap(temp));
+                    }
+                }
+
+                var item = new ListViewItem
+                {
+                    Text = "",
+                    ImageKey = artist.Id.ToString(),
+                    Tag = artist.Id
+                };
+
+                listViewArtists.Items.Add(item);
+            }
+        }
+
+        private void btnClearArtistsFilters_Click(object sender, EventArgs e)
+        {
+            txtArtistFilter.Text = "";
+            RefreshArtistList();
         }
 
         private void listViewArtists_DrawItem(object sender, DrawListViewItemEventArgs e)
@@ -340,14 +416,24 @@ namespace MusicManager
 
             if (songToRemove != null)
             {
+                var confirm = MessageBox.Show(
+                    $"You really want to delete a song \"{songToRemove.Title}\"?",
+                    "Confirm",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                if (confirm != DialogResult.Yes)
+                    return;
+
                 songs.Remove(songToRemove);
                 if (artistSongs.TryGetValue(songToRemove.ArtistId, out var list))
                 {
                     list.Remove(songToRemove.Title);
                 }
-;
             }
 
+            listViewSongAlbums.Items.Clear();
+            imageListSongs.Images.Clear();
             RefreshSongList();
             SaveData();
         }
@@ -356,6 +442,7 @@ namespace MusicManager
         {
             if (listViewAllSongs.SelectedItems.Count == 0)
             {
+                MessageBox.Show("Please select a song to edit.");
                 return;
             }
 
@@ -390,6 +477,87 @@ namespace MusicManager
 
                 RefreshSongList();
                 SaveData();
+            }
+        }
+        private void btnFilterSongs_Click(object sender, EventArgs e)
+        {
+            var filterForm = new SongsFilterForm(artists);
+            while (true)
+            {
+                if (filterForm.ShowDialog() != DialogResult.OK)
+                {
+                    break;
+                }
+
+                var filteredSongs = songs.AsEnumerable();
+
+                if (!string.IsNullOrEmpty(filterForm.SongTitle))
+                {
+                    filteredSongs = filteredSongs.Where(s => s.Title.Contains(filterForm.SongTitle, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (filterForm.SelectedArtistId.HasValue)
+                {
+                    filteredSongs = filteredSongs.Where(s => s.ArtistId == filterForm.SelectedArtistId.Value);
+                }
+
+                if (filterForm.YearMin.HasValue)
+                {
+                    filteredSongs = filteredSongs.Where(s => s.Year >= filterForm.YearMin.Value);
+                }
+
+                if (filterForm.YearMax.HasValue)
+                {
+                    filteredSongs = filteredSongs.Where(s => s.Year <= filterForm.YearMax.Value);
+                }
+
+                if (!filteredSongs.Any())
+                {
+                    filterForm.ShowError("Nothing Found");
+                    continue;
+                }
+
+                listViewAllSongs.Items.Clear();
+                imageListSongs.Images.Clear();
+
+
+                foreach (var song in filteredSongs.OrderBy(s => s.Title))
+                {
+                    var artist = artists.FirstOrDefault(a => a.Id == song.ArtistId);
+                    if (artist == null) continue;
+
+                    string imageKey = song.Id.ToString();
+                    string imagePath = File.Exists(song.ImagePath) ? song.ImagePath :
+                        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "default_song.png");
+
+                    if (!imageListSongs.Images.ContainsKey(imageKey))
+                    {
+                        try
+                        {
+                            using (var temp = Image.FromFile(imagePath))
+                            {
+                                imageListSongs.Images.Add(imageKey, new Bitmap(temp));
+                            }
+                        }
+                        catch
+                        {
+                            using (var temp = Image.FromFile("Images/default_song.png"))
+                            {
+                                imageListSongs.Images.Add(imageKey, new Bitmap(temp));
+                            }
+                        }
+                    }
+
+                    var item = new ListViewItem
+                    {
+                        Text = "",
+                        ImageKey = imageKey,
+                        Tag = song.Id
+                    };
+
+                    listViewAllSongs.Items.Add(item);
+                }
+                break;
             }
         }
 
@@ -534,43 +702,6 @@ namespace MusicManager
         }
 
 
-        private void listViewAllSongs_DrawItem(object sender, DrawListViewItemEventArgs e)
-        {
-            var song = songs.FirstOrDefault(s => s.Id.ToString() == e.Item.ImageKey);
-            var artist = artists.FirstOrDefault(a => a.Id == song?.ArtistId);
-
-            if (song == null || artist == null)
-            {
-                return;
-            }
-
-            Font titleFont = new Font("Segoe UI", 10, FontStyle.Bold);
-            Font artistFont = new Font("Segoe UI", 8, FontStyle.Regular);
-            Font yearFont = new Font("Segoe UI", 7, FontStyle.Italic);
-            Color textColor = Color.White;
-
-            Color backColor = e.Item.Selected ? Color.FromArgb(100, 100, 100) : e.Item.BackColor;
-            e.Graphics.FillRectangle(new SolidBrush(backColor), e.Bounds);
-
-            if (e.Item.Selected)
-            {
-                Rectangle borderRect = e.Bounds;
-                borderRect.Inflate(-1, -1);
-                using Pen borderPen = new Pen(Color.White, 2);
-                e.Graphics.DrawRectangle(borderPen, borderRect);
-            }
-
-            Image img = imageListSongs.Images[e.Item.ImageKey];
-            Rectangle imageRect = new Rectangle(e.Bounds.X + 5, e.Bounds.Y + 5, 64, 64);
-            e.Graphics.DrawImage(img, imageRect);
-
-            int textX = imageRect.Right + 10;
-            int textY = imageRect.Top;
-
-            e.Graphics.DrawString(song.Title, titleFont, new SolidBrush(textColor), new PointF(textX, textY));
-            e.Graphics.DrawString(artist.Name, artistFont, new SolidBrush(Color.LightGray), new PointF(textX, textY + 22));
-            e.Graphics.DrawString(song.Year.ToString(), yearFont, new SolidBrush(Color.Silver), new PointF(textX, textY + 40));
-        }
 
         private void btnAddAlbum_Click(object sender, EventArgs e)
         {
@@ -624,9 +755,21 @@ namespace MusicManager
 
             if (albumToRemove != null)
             {
+                var confirm = MessageBox.Show(
+    $"You really want to delete an album \"{albumToRemove.Title}\"?",
+    "Confirm",
+    MessageBoxButtons.YesNo,
+    MessageBoxIcon.Warning);
+
+                if (confirm != DialogResult.Yes)
+                    return;
+
+                albumSongLinks.RemoveAll(link => link.AlbumId == albumId);
                 albums.Remove(albumToRemove);
             }
 
+            listViewAlbumSongs.Items.Clear();
+            imageListAlbums.Images.Clear();
             RefreshAlbumList();
             SaveData();
         }
@@ -635,6 +778,7 @@ namespace MusicManager
         {
             if (listViewAlbums.SelectedItems.Count == 0)
             {
+                MessageBox.Show("Please select a album to edit.");
                 return;
             }
 
@@ -715,6 +859,44 @@ namespace MusicManager
 
             int albumId = (int)listViewAlbums.SelectedItems[0].Tag;
             ShowSongsForAlbum(albumId);
+        }
+
+        private void listViewAllSongs_DrawItem(object sender, DrawListViewItemEventArgs e)
+        {
+            var song = songs.FirstOrDefault(s => s.Id.ToString() == e.Item.ImageKey);
+            var artist = artists.FirstOrDefault(a => a.Id == song?.ArtistId);
+
+            if (song == null || artist == null)
+            {
+                return;
+            }
+
+            Font titleFont = new Font("Segoe UI", 10, FontStyle.Bold);
+            Font artistFont = new Font("Segoe UI", 8, FontStyle.Regular);
+            Font yearFont = new Font("Segoe UI", 7, FontStyle.Italic);
+            Color textColor = Color.White;
+
+            Color backColor = e.Item.Selected ? Color.FromArgb(100, 100, 100) : e.Item.BackColor;
+            e.Graphics.FillRectangle(new SolidBrush(backColor), e.Bounds);
+
+            if (e.Item.Selected)
+            {
+                Rectangle borderRect = e.Bounds;
+                borderRect.Inflate(-1, -1);
+                using Pen borderPen = new Pen(Color.White, 2);
+                e.Graphics.DrawRectangle(borderPen, borderRect);
+            }
+
+            Image img = imageListSongs.Images[e.Item.ImageKey];
+            Rectangle imageRect = new Rectangle(e.Bounds.X + 5, e.Bounds.Y + 5, 64, 64);
+            e.Graphics.DrawImage(img, imageRect);
+
+            int textX = imageRect.Right + 10;
+            int textY = imageRect.Top;
+
+            e.Graphics.DrawString(song.Title, titleFont, new SolidBrush(textColor), new PointF(textX, textY));
+            e.Graphics.DrawString(artist.Name, artistFont, new SolidBrush(Color.LightGray), new PointF(textX, textY + 22));
+            e.Graphics.DrawString(song.Year.ToString(), yearFont, new SolidBrush(Color.Silver), new PointF(textX, textY + 40));
         }
 
         private void ShowSongsForAlbum(int albumId)
@@ -819,10 +1001,69 @@ namespace MusicManager
             var link = albumSongLinks.FirstOrDefault(l => l.AlbumId == albumId && l.SongId == songId);
             if (link != null)
             {
+                var song = songs.FirstOrDefault(s => s.Id == songId);
+                var confirm = MessageBox.Show(
+                    $"Do you really want to delete a song \"{song?.Title}\" from album?",
+                    "Confirm",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                if (confirm != DialogResult.Yes)
+                    return;
+
+                imageListAlbumSongs.Images.Clear();
                 albumSongLinks.Remove(link);
                 ShowSongsForAlbum(albumId);
                 SaveData();
             }
+        }
+
+        private void btnFilterAlbums_Click(object sender, EventArgs e)
+        {
+            string filter = txtAlbumFilter.Text.Trim();
+            listViewAlbums.Items.Clear();
+            imageListAlbums.Images.Clear();
+
+            var filteredAlbums = string.IsNullOrEmpty(filter) ?
+                albums : albums.Where(a => a.Title.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            foreach (var album in filteredAlbums)
+            {
+                string path = File.Exists(album.ImagePath)
+                    ? album.ImagePath
+                    : "Images/default_album.png";
+
+                try
+                {
+                    using (var temp = Image.FromFile(path))
+                    {
+                        imageListAlbums.Images.Add(album.Id.ToString(), new Bitmap(temp));
+                    }
+                }
+                catch
+                {
+                    using (var temp = Image.FromFile("Images/default_artist.png"))
+                    {
+                        imageListAlbums.Images.Add(album.Id.ToString(), new Bitmap(temp));
+                    }
+                }
+
+                var item = new ListViewItem
+                {
+                    Text = "",
+                    ImageKey = album.Id.ToString(),
+                    Tag = album.Id
+                };
+
+                listViewAlbums.Items.Add(item);
+            }
+        }
+
+        private void btnClearAlbumsFilter_Click(object sender, EventArgs e)
+        {
+            txtAlbumFilter.Text = "";
+            RefreshAlbumList();
+            listViewAlbumSongs.Clear();
         }
 
         private void RefreshAlbumList()
@@ -873,7 +1114,7 @@ namespace MusicManager
         {
             var album = albums.FirstOrDefault(a => a.Id.ToString() == e.Item.ImageKey);
             Artist artist = null;
-            string artistName = "Власний альбом";
+            string artistName = "My album";
 
             if (album != null && album.ArtistId != null)
             {
@@ -891,7 +1132,6 @@ namespace MusicManager
 
             Font titleFont = new Font("Segoe UI", 10, FontStyle.Bold);
             Font artistFont = new Font("Segoe UI", 8, FontStyle.Regular);
-            //Font yearFont = new Font("Segoe UI", 7, FontStyle.Italic);
             Color textColor = Color.White;
 
             Color backColor = e.Item.Selected ? Color.FromArgb(100, 100, 100) : e.Item.BackColor;
@@ -914,7 +1154,6 @@ namespace MusicManager
 
             e.Graphics.DrawString(album.Title, titleFont, new SolidBrush(textColor), new PointF(textX, textY));
             e.Graphics.DrawString(artistName, artistFont, new SolidBrush(Color.LightGray), new PointF(textX, textY + 22));
-            //e.Graphics.DrawString(album.Year.ToString(), yearFont, new SolidBrush(Color.Silver), new PointF(textX, textY + 40));
         }
 
         private void SaveData()
@@ -963,6 +1202,11 @@ namespace MusicManager
                 RefreshSongList();
                 RefreshAlbumList();
             }
+        }
+
+        private void btnClearFilters_Click(object sender, EventArgs e)
+        {
+            RefreshSongList();
         }
     }
 }

@@ -1,3 +1,6 @@
+using System.Globalization;
+using System.Threading;
+
 namespace MusicManager
 {
     internal static class Program
@@ -8,8 +11,10 @@ namespace MusicManager
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
+            // Set UI culture and culture to English (United States)
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+
             ApplicationConfiguration.Initialize();
             Application.Run(new MainForm());
         }

@@ -29,26 +29,36 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            tabAlbums = new TabPage();
-            btnRemoveSongFromAlbum = new Button();
-            label1 = new Label();
-            listViewAlbumSongs = new ListView();
-            imageListSongs = new ImageList(components);
-            btnAddSongToAlbum = new Button();
-            btnEditAlbum = new Button();
-            btnDeleteAlbum = new Button();
-            btnAddAlbum = new Button();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            splitContainer3 = new SplitContainer();
+            label6 = new Label();
+            txtAlbumFilter = new TextBox();
+            btnClearAlbumsFilter = new Button();
+            btnFilterAlbums = new Button();
             listViewAlbums = new ListView();
             imageListAlbums = new ImageList(components);
-            tabSongs = new TabPage();
-            label3 = new Label();
-            listViewSongAlbums = new ListView();
-            btnEditSong = new Button();
-            btnDeleteSong = new Button();
+            btnAddAlbum = new Button();
+            btnEditAlbum = new Button();
+            btnDeleteAlbum = new Button();
+            label4 = new Label();
+            listViewAlbumSongs = new ListView();
+            imageListSongs = new ImageList(components);
+            btnRemoveSongFromAlbum = new Button();
+            btnAddSongToAlbum = new Button();
+            splitContainer2 = new SplitContainer();
+            btnClearFilters = new Button();
+            btnFilterSongs = new Button();
             listViewAllSongs = new ListView();
             btnAddSong = new Button();
-            tabArtists = new TabPage();
+            btnDeleteSong = new Button();
+            btnEditSong = new Button();
+            listViewSongAlbums = new ListView();
+            label3 = new Label();
             splitContainer1 = new SplitContainer();
+            label5 = new Label();
+            txtArtistFilter = new TextBox();
+            btnClearArtistsFilters = new Button();
+            btnFilterArtists = new Button();
             btnEditArtist = new Button();
             listViewArtists = new ListView();
             imageListArtists = new ImageList(components);
@@ -56,137 +66,91 @@
             btnAddArtist = new Button();
             listViewArtistSongs = new ListView();
             label2 = new Label();
+            tabAlbums = new TabPage();
+            label1 = new Label();
+            tabSongs = new TabPage();
+            tabArtists = new TabPage();
             tabControlMain = new TabControl();
-            tabAlbums.SuspendLayout();
-            tabSongs.SuspendLayout();
-            tabArtists.SuspendLayout();
+            imageListAlbumSongs = new ImageList(components);
+            ((System.ComponentModel.ISupportInitialize)splitContainer3).BeginInit();
+            splitContainer3.Panel1.SuspendLayout();
+            splitContainer3.Panel2.SuspendLayout();
+            splitContainer3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer2).BeginInit();
+            splitContainer2.Panel1.SuspendLayout();
+            splitContainer2.Panel2.SuspendLayout();
+            splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
+            tabAlbums.SuspendLayout();
+            tabSongs.SuspendLayout();
+            tabArtists.SuspendLayout();
             tabControlMain.SuspendLayout();
             SuspendLayout();
             // 
-            // tabAlbums
+            // splitContainer3
             // 
-            tabAlbums.BackColor = Color.FromArgb(30, 30, 30);
-            tabAlbums.Controls.Add(btnRemoveSongFromAlbum);
-            tabAlbums.Controls.Add(label1);
-            tabAlbums.Controls.Add(listViewAlbumSongs);
-            tabAlbums.Controls.Add(btnAddSongToAlbum);
-            tabAlbums.Controls.Add(btnEditAlbum);
-            tabAlbums.Controls.Add(btnDeleteAlbum);
-            tabAlbums.Controls.Add(btnAddAlbum);
-            tabAlbums.Controls.Add(listViewAlbums);
-            tabAlbums.ForeColor = Color.White;
-            tabAlbums.Location = new Point(4, 24);
-            tabAlbums.Name = "tabAlbums";
-            tabAlbums.Size = new Size(792, 422);
-            tabAlbums.TabIndex = 3;
-            tabAlbums.Text = "Albums";
+            resources.ApplyResources(splitContainer3, "splitContainer3");
+            splitContainer3.Name = "splitContainer3";
             // 
-            // btnRemoveSongFromAlbum
+            // splitContainer3.Panel1
             // 
-            btnRemoveSongFromAlbum.BackColor = Color.FromArgb(35, 35, 35);
-            btnRemoveSongFromAlbum.Location = new Point(555, 11);
-            btnRemoveSongFromAlbum.Name = "btnRemoveSongFromAlbum";
-            btnRemoveSongFromAlbum.Size = new Size(90, 23);
-            btnRemoveSongFromAlbum.TabIndex = 7;
-            btnRemoveSongFromAlbum.Text = "Remove Song";
-            btnRemoveSongFromAlbum.UseVisualStyleBackColor = false;
-            btnRemoveSongFromAlbum.Click += btnRemoveSongFromAlbum_Click;
+            splitContainer3.Panel1.Controls.Add(label6);
+            splitContainer3.Panel1.Controls.Add(txtAlbumFilter);
+            splitContainer3.Panel1.Controls.Add(btnClearAlbumsFilter);
+            splitContainer3.Panel1.Controls.Add(btnFilterAlbums);
+            splitContainer3.Panel1.Controls.Add(listViewAlbums);
+            splitContainer3.Panel1.Controls.Add(btnAddAlbum);
+            splitContainer3.Panel1.Controls.Add(btnEditAlbum);
+            splitContainer3.Panel1.Controls.Add(btnDeleteAlbum);
             // 
-            // label1
+            // splitContainer3.Panel2
             // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 12F);
-            label1.Location = new Point(392, 13);
-            label1.Name = "label1";
-            label1.Size = new Size(103, 21);
-            label1.TabIndex = 6;
-            label1.Text = "Album Songs";
+            splitContainer3.Panel2.Controls.Add(label4);
+            splitContainer3.Panel2.Controls.Add(listViewAlbumSongs);
+            splitContainer3.Panel2.Controls.Add(btnRemoveSongFromAlbum);
+            splitContainer3.Panel2.Controls.Add(btnAddSongToAlbum);
             // 
-            // listViewAlbumSongs
+            // label6
             // 
-            listViewAlbumSongs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            listViewAlbumSongs.BackColor = Color.FromArgb(35, 35, 35);
-            listViewAlbumSongs.ForeColor = Color.White;
-            listViewAlbumSongs.FullRowSelect = true;
-            listViewAlbumSongs.LargeImageList = imageListSongs;
-            listViewAlbumSongs.Location = new Point(392, 40);
-            listViewAlbumSongs.MultiSelect = false;
-            listViewAlbumSongs.Name = "listViewAlbumSongs";
-            listViewAlbumSongs.OwnerDraw = true;
-            listViewAlbumSongs.Size = new Size(392, 374);
-            listViewAlbumSongs.TabIndex = 5;
-            listViewAlbumSongs.TileSize = new Size(300, 76);
-            listViewAlbumSongs.UseCompatibleStateImageBehavior = false;
-            listViewAlbumSongs.View = View.Tile;
-            listViewAlbumSongs.DrawItem += listViewAlbumSongs_DrawItem;
+            resources.ApplyResources(label6, "label6");
+            label6.Name = "label6";
             // 
-            // imageListSongs
+            // txtAlbumFilter
             // 
-            imageListSongs.ColorDepth = ColorDepth.Depth32Bit;
-            imageListSongs.ImageSize = new Size(64, 64);
-            imageListSongs.TransparentColor = Color.Transparent;
+            txtAlbumFilter.BackColor = Color.FromArgb(35, 35, 35);
+            txtAlbumFilter.ForeColor = Color.White;
+            resources.ApplyResources(txtAlbumFilter, "txtAlbumFilter");
+            txtAlbumFilter.Name = "txtAlbumFilter";
             // 
-            // btnAddSongToAlbum
+            // btnClearAlbumsFilter
             // 
-            btnAddSongToAlbum.BackColor = Color.FromArgb(35, 35, 35);
-            btnAddSongToAlbum.Location = new Point(651, 11);
-            btnAddSongToAlbum.Name = "btnAddSongToAlbum";
-            btnAddSongToAlbum.Size = new Size(133, 23);
-            btnAddSongToAlbum.TabIndex = 4;
-            btnAddSongToAlbum.Text = "Add Song To Album";
-            btnAddSongToAlbum.UseVisualStyleBackColor = false;
-            btnAddSongToAlbum.Click += btnAddSongToAlbum_Click;
+            btnClearAlbumsFilter.BackColor = Color.FromArgb(35, 35, 35);
+            resources.ApplyResources(btnClearAlbumsFilter, "btnClearAlbumsFilter");
+            btnClearAlbumsFilter.Name = "btnClearAlbumsFilter";
+            btnClearAlbumsFilter.UseVisualStyleBackColor = false;
+            btnClearAlbumsFilter.Click += btnClearAlbumsFilter_Click;
             // 
-            // btnEditAlbum
+            // btnFilterAlbums
             // 
-            btnEditAlbum.BackColor = Color.FromArgb(35, 35, 35);
-            btnEditAlbum.Location = new Point(102, 11);
-            btnEditAlbum.Name = "btnEditAlbum";
-            btnEditAlbum.Size = new Size(88, 23);
-            btnEditAlbum.TabIndex = 3;
-            btnEditAlbum.Text = "Edit Album";
-            btnEditAlbum.UseVisualStyleBackColor = false;
-            btnEditAlbum.Click += btnEditAlbum_Click;
-            // 
-            // btnDeleteAlbum
-            // 
-            btnDeleteAlbum.BackColor = Color.FromArgb(35, 35, 35);
-            btnDeleteAlbum.Location = new Point(196, 11);
-            btnDeleteAlbum.Name = "btnDeleteAlbum";
-            btnDeleteAlbum.Size = new Size(88, 23);
-            btnDeleteAlbum.TabIndex = 2;
-            btnDeleteAlbum.Text = "Delete Album";
-            btnDeleteAlbum.UseVisualStyleBackColor = false;
-            btnDeleteAlbum.Click += btnDeleteAlbum_Click;
-            // 
-            // btnAddAlbum
-            // 
-            btnAddAlbum.BackColor = Color.FromArgb(35, 35, 35);
-            btnAddAlbum.Location = new Point(8, 11);
-            btnAddAlbum.Name = "btnAddAlbum";
-            btnAddAlbum.Size = new Size(88, 23);
-            btnAddAlbum.TabIndex = 1;
-            btnAddAlbum.Text = "Add Album";
-            btnAddAlbum.UseVisualStyleBackColor = false;
-            btnAddAlbum.Click += btnAddAlbum_Click;
+            btnFilterAlbums.BackColor = Color.FromArgb(35, 35, 35);
+            resources.ApplyResources(btnFilterAlbums, "btnFilterAlbums");
+            btnFilterAlbums.Name = "btnFilterAlbums";
+            btnFilterAlbums.UseVisualStyleBackColor = false;
+            btnFilterAlbums.Click += btnFilterAlbums_Click;
             // 
             // listViewAlbums
             // 
-            listViewAlbums.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            resources.ApplyResources(listViewAlbums, "listViewAlbums");
             listViewAlbums.BackColor = Color.FromArgb(35, 35, 35);
             listViewAlbums.ForeColor = Color.White;
             listViewAlbums.FullRowSelect = true;
             listViewAlbums.LargeImageList = imageListAlbums;
-            listViewAlbums.Location = new Point(8, 40);
             listViewAlbums.MultiSelect = false;
             listViewAlbums.Name = "listViewAlbums";
             listViewAlbums.OwnerDraw = true;
-            listViewAlbums.Size = new Size(375, 374);
-            listViewAlbums.TabIndex = 0;
             listViewAlbums.TileSize = new Size(300, 76);
             listViewAlbums.UseCompatibleStateImageBehavior = false;
             listViewAlbums.View = View.Tile;
@@ -196,90 +160,120 @@
             // imageListAlbums
             // 
             imageListAlbums.ColorDepth = ColorDepth.Depth32Bit;
-            imageListAlbums.ImageSize = new Size(64, 64);
+            resources.ApplyResources(imageListAlbums, "imageListAlbums");
             imageListAlbums.TransparentColor = Color.Transparent;
             // 
-            // tabSongs
+            // btnAddAlbum
             // 
-            tabSongs.BackColor = Color.FromArgb(30, 30, 30);
-            tabSongs.Controls.Add(label3);
-            tabSongs.Controls.Add(listViewSongAlbums);
-            tabSongs.Controls.Add(btnEditSong);
-            tabSongs.Controls.Add(btnDeleteSong);
-            tabSongs.Controls.Add(listViewAllSongs);
-            tabSongs.Controls.Add(btnAddSong);
-            tabSongs.ForeColor = Color.White;
-            tabSongs.Location = new Point(4, 24);
-            tabSongs.Name = "tabSongs";
-            tabSongs.Size = new Size(792, 422);
-            tabSongs.TabIndex = 2;
-            tabSongs.Text = "Songs";
+            btnAddAlbum.BackColor = Color.FromArgb(35, 35, 35);
+            resources.ApplyResources(btnAddAlbum, "btnAddAlbum");
+            btnAddAlbum.Name = "btnAddAlbum";
+            btnAddAlbum.UseVisualStyleBackColor = false;
+            btnAddAlbum.Click += btnAddAlbum_Click;
             // 
-            // label3
+            // btnEditAlbum
             // 
-            label3.AutoSize = true;
-            label3.Font = new Font("Segoe UI", 12F);
-            label3.Location = new Point(399, 13);
-            label3.Name = "label3";
-            label3.Size = new Size(135, 21);
-            label3.TabIndex = 10;
-            label3.Text = "Albums with song";
+            btnEditAlbum.BackColor = Color.FromArgb(35, 35, 35);
+            resources.ApplyResources(btnEditAlbum, "btnEditAlbum");
+            btnEditAlbum.Name = "btnEditAlbum";
+            btnEditAlbum.UseVisualStyleBackColor = false;
+            btnEditAlbum.Click += btnEditAlbum_Click;
             // 
-            // listViewSongAlbums
+            // btnDeleteAlbum
             // 
-            listViewSongAlbums.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            listViewSongAlbums.BackColor = Color.FromArgb(35, 35, 35);
-            listViewSongAlbums.Font = new Font("Segoe UI", 10F);
-            listViewSongAlbums.ForeColor = Color.White;
-            listViewSongAlbums.FullRowSelect = true;
-            listViewSongAlbums.LargeImageList = imageListAlbums;
-            listViewSongAlbums.Location = new Point(399, 40);
-            listViewSongAlbums.MultiSelect = false;
-            listViewSongAlbums.Name = "listViewSongAlbums";
-            listViewSongAlbums.OwnerDraw = true;
-            listViewSongAlbums.Size = new Size(385, 374);
-            listViewSongAlbums.TabIndex = 9;
-            listViewSongAlbums.TileSize = new Size(300, 76);
-            listViewSongAlbums.UseCompatibleStateImageBehavior = false;
-            listViewSongAlbums.View = View.Tile;
-            listViewSongAlbums.DrawItem += listViewSongAlbums_DrawItem;
+            btnDeleteAlbum.BackColor = Color.FromArgb(35, 35, 35);
+            resources.ApplyResources(btnDeleteAlbum, "btnDeleteAlbum");
+            btnDeleteAlbum.Name = "btnDeleteAlbum";
+            btnDeleteAlbum.UseVisualStyleBackColor = false;
+            btnDeleteAlbum.Click += btnDeleteAlbum_Click;
             // 
-            // btnEditSong
+            // label4
             // 
-            btnEditSong.BackColor = Color.FromArgb(35, 35, 35);
-            btnEditSong.Location = new Point(102, 11);
-            btnEditSong.Name = "btnEditSong";
-            btnEditSong.Size = new Size(88, 23);
-            btnEditSong.TabIndex = 8;
-            btnEditSong.Text = "Edit Song";
-            btnEditSong.UseVisualStyleBackColor = false;
-            btnEditSong.Click += btnEditSong_Click;
+            resources.ApplyResources(label4, "label4");
+            label4.Name = "label4";
             // 
-            // btnDeleteSong
+            // listViewAlbumSongs
             // 
-            btnDeleteSong.BackColor = Color.FromArgb(35, 35, 35);
-            btnDeleteSong.Location = new Point(196, 11);
-            btnDeleteSong.Name = "btnDeleteSong";
-            btnDeleteSong.Size = new Size(88, 23);
-            btnDeleteSong.TabIndex = 7;
-            btnDeleteSong.Text = "Delete Song";
-            btnDeleteSong.UseVisualStyleBackColor = false;
-            btnDeleteSong.Click += btnDeleteSong_Click;
+            resources.ApplyResources(listViewAlbumSongs, "listViewAlbumSongs");
+            listViewAlbumSongs.BackColor = Color.FromArgb(35, 35, 35);
+            listViewAlbumSongs.ForeColor = Color.White;
+            listViewAlbumSongs.FullRowSelect = true;
+            listViewAlbumSongs.LargeImageList = imageListSongs;
+            listViewAlbumSongs.MultiSelect = false;
+            listViewAlbumSongs.Name = "listViewAlbumSongs";
+            listViewAlbumSongs.OwnerDraw = true;
+            listViewAlbumSongs.TileSize = new Size(300, 76);
+            listViewAlbumSongs.UseCompatibleStateImageBehavior = false;
+            listViewAlbumSongs.View = View.Tile;
+            listViewAlbumSongs.DrawItem += listViewAlbumSongs_DrawItem;
+            // 
+            // imageListSongs
+            // 
+            imageListSongs.ColorDepth = ColorDepth.Depth32Bit;
+            resources.ApplyResources(imageListSongs, "imageListSongs");
+            imageListSongs.TransparentColor = Color.Transparent;
+            // 
+            // btnRemoveSongFromAlbum
+            // 
+            btnRemoveSongFromAlbum.BackColor = Color.FromArgb(35, 35, 35);
+            resources.ApplyResources(btnRemoveSongFromAlbum, "btnRemoveSongFromAlbum");
+            btnRemoveSongFromAlbum.Name = "btnRemoveSongFromAlbum";
+            btnRemoveSongFromAlbum.UseVisualStyleBackColor = false;
+            btnRemoveSongFromAlbum.Click += btnRemoveSongFromAlbum_Click;
+            // 
+            // btnAddSongToAlbum
+            // 
+            btnAddSongToAlbum.BackColor = Color.FromArgb(35, 35, 35);
+            resources.ApplyResources(btnAddSongToAlbum, "btnAddSongToAlbum");
+            btnAddSongToAlbum.Name = "btnAddSongToAlbum";
+            btnAddSongToAlbum.UseVisualStyleBackColor = false;
+            btnAddSongToAlbum.Click += btnAddSongToAlbum_Click;
+            // 
+            // splitContainer2
+            // 
+            resources.ApplyResources(splitContainer2, "splitContainer2");
+            splitContainer2.Name = "splitContainer2";
+            // 
+            // splitContainer2.Panel1
+            // 
+            splitContainer2.Panel1.Controls.Add(btnClearFilters);
+            splitContainer2.Panel1.Controls.Add(btnFilterSongs);
+            splitContainer2.Panel1.Controls.Add(listViewAllSongs);
+            splitContainer2.Panel1.Controls.Add(btnAddSong);
+            splitContainer2.Panel1.Controls.Add(btnDeleteSong);
+            splitContainer2.Panel1.Controls.Add(btnEditSong);
+            // 
+            // splitContainer2.Panel2
+            // 
+            splitContainer2.Panel2.Controls.Add(listViewSongAlbums);
+            splitContainer2.Panel2.Controls.Add(label3);
+            // 
+            // btnClearFilters
+            // 
+            btnClearFilters.BackColor = Color.FromArgb(35, 35, 35);
+            resources.ApplyResources(btnClearFilters, "btnClearFilters");
+            btnClearFilters.Name = "btnClearFilters";
+            btnClearFilters.UseVisualStyleBackColor = false;
+            btnClearFilters.Click += btnClearFilters_Click;
+            // 
+            // btnFilterSongs
+            // 
+            btnFilterSongs.BackColor = Color.FromArgb(35, 35, 35);
+            resources.ApplyResources(btnFilterSongs, "btnFilterSongs");
+            btnFilterSongs.Name = "btnFilterSongs";
+            btnFilterSongs.UseVisualStyleBackColor = false;
+            btnFilterSongs.Click += btnFilterSongs_Click;
             // 
             // listViewAllSongs
             // 
-            listViewAllSongs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            resources.ApplyResources(listViewAllSongs, "listViewAllSongs");
             listViewAllSongs.BackColor = Color.FromArgb(35, 35, 35);
-            listViewAllSongs.Font = new Font("Segoe UI", 10F);
             listViewAllSongs.ForeColor = Color.White;
             listViewAllSongs.FullRowSelect = true;
             listViewAllSongs.LargeImageList = imageListSongs;
-            listViewAllSongs.Location = new Point(8, 40);
             listViewAllSongs.MultiSelect = false;
             listViewAllSongs.Name = "listViewAllSongs";
             listViewAllSongs.OwnerDraw = true;
-            listViewAllSongs.Size = new Size(385, 374);
-            listViewAllSongs.TabIndex = 5;
             listViewAllSongs.TileSize = new Size(300, 76);
             listViewAllSongs.UseCompatibleStateImageBehavior = false;
             listViewAllSongs.View = View.Tile;
@@ -289,33 +283,58 @@
             // btnAddSong
             // 
             btnAddSong.BackColor = Color.FromArgb(35, 35, 35);
-            btnAddSong.Location = new Point(8, 11);
+            resources.ApplyResources(btnAddSong, "btnAddSong");
             btnAddSong.Name = "btnAddSong";
-            btnAddSong.Size = new Size(88, 23);
-            btnAddSong.TabIndex = 4;
-            btnAddSong.Text = "Add Song";
             btnAddSong.UseVisualStyleBackColor = false;
             btnAddSong.Click += btnAddSong_Click;
             // 
-            // tabArtists
+            // btnDeleteSong
             // 
-            tabArtists.BackColor = Color.FromArgb(30, 30, 30);
-            tabArtists.Controls.Add(splitContainer1);
-            tabArtists.ForeColor = Color.White;
-            tabArtists.Location = new Point(4, 24);
-            tabArtists.Name = "tabArtists";
-            tabArtists.Size = new Size(792, 422);
-            tabArtists.TabIndex = 0;
-            tabArtists.Text = "Artists";
+            btnDeleteSong.BackColor = Color.FromArgb(35, 35, 35);
+            resources.ApplyResources(btnDeleteSong, "btnDeleteSong");
+            btnDeleteSong.Name = "btnDeleteSong";
+            btnDeleteSong.UseVisualStyleBackColor = false;
+            btnDeleteSong.Click += btnDeleteSong_Click;
+            // 
+            // btnEditSong
+            // 
+            btnEditSong.BackColor = Color.FromArgb(35, 35, 35);
+            resources.ApplyResources(btnEditSong, "btnEditSong");
+            btnEditSong.Name = "btnEditSong";
+            btnEditSong.UseVisualStyleBackColor = false;
+            btnEditSong.Click += btnEditSong_Click;
+            // 
+            // listViewSongAlbums
+            // 
+            resources.ApplyResources(listViewSongAlbums, "listViewSongAlbums");
+            listViewSongAlbums.BackColor = Color.FromArgb(35, 35, 35);
+            listViewSongAlbums.ForeColor = Color.White;
+            listViewSongAlbums.FullRowSelect = true;
+            listViewSongAlbums.LargeImageList = imageListAlbums;
+            listViewSongAlbums.MultiSelect = false;
+            listViewSongAlbums.Name = "listViewSongAlbums";
+            listViewSongAlbums.OwnerDraw = true;
+            listViewSongAlbums.TileSize = new Size(300, 76);
+            listViewSongAlbums.UseCompatibleStateImageBehavior = false;
+            listViewSongAlbums.View = View.Tile;
+            listViewSongAlbums.DrawItem += listViewSongAlbums_DrawItem;
+            // 
+            // label3
+            // 
+            resources.ApplyResources(label3, "label3");
+            label3.Name = "label3";
             // 
             // splitContainer1
             // 
-            splitContainer1.Dock = DockStyle.Fill;
-            splitContainer1.Location = new Point(0, 0);
+            resources.ApplyResources(splitContainer1, "splitContainer1");
             splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
             // 
+            splitContainer1.Panel1.Controls.Add(label5);
+            splitContainer1.Panel1.Controls.Add(txtArtistFilter);
+            splitContainer1.Panel1.Controls.Add(btnClearArtistsFilters);
+            splitContainer1.Panel1.Controls.Add(btnFilterArtists);
             splitContainer1.Panel1.Controls.Add(btnEditArtist);
             splitContainer1.Panel1.Controls.Add(listViewArtists);
             splitContainer1.Panel1.Controls.Add(btnDeleteArtist);
@@ -325,34 +344,52 @@
             // 
             splitContainer1.Panel2.Controls.Add(listViewArtistSongs);
             splitContainer1.Panel2.Controls.Add(label2);
-            splitContainer1.Size = new Size(792, 422);
-            splitContainer1.SplitterDistance = 374;
-            splitContainer1.TabIndex = 0;
+            // 
+            // label5
+            // 
+            resources.ApplyResources(label5, "label5");
+            label5.Name = "label5";
+            // 
+            // txtArtistFilter
+            // 
+            txtArtistFilter.BackColor = Color.FromArgb(35, 35, 35);
+            txtArtistFilter.ForeColor = Color.White;
+            resources.ApplyResources(txtArtistFilter, "txtArtistFilter");
+            txtArtistFilter.Name = "txtArtistFilter";
+            // 
+            // btnClearArtistsFilters
+            // 
+            btnClearArtistsFilters.BackColor = Color.FromArgb(35, 35, 35);
+            resources.ApplyResources(btnClearArtistsFilters, "btnClearArtistsFilters");
+            btnClearArtistsFilters.Name = "btnClearArtistsFilters";
+            btnClearArtistsFilters.UseVisualStyleBackColor = false;
+            btnClearArtistsFilters.Click += btnClearArtistsFilters_Click;
+            // 
+            // btnFilterArtists
+            // 
+            btnFilterArtists.BackColor = Color.FromArgb(35, 35, 35);
+            resources.ApplyResources(btnFilterArtists, "btnFilterArtists");
+            btnFilterArtists.Name = "btnFilterArtists";
+            btnFilterArtists.UseVisualStyleBackColor = false;
+            btnFilterArtists.Click += btnFilterArtists_Click;
             // 
             // btnEditArtist
             // 
             btnEditArtist.BackColor = Color.FromArgb(35, 35, 35);
-            btnEditArtist.Location = new Point(90, 10);
+            resources.ApplyResources(btnEditArtist, "btnEditArtist");
             btnEditArtist.Name = "btnEditArtist";
-            btnEditArtist.Size = new Size(77, 23);
-            btnEditArtist.TabIndex = 6;
-            btnEditArtist.Text = "Edit Artist";
             btnEditArtist.UseVisualStyleBackColor = false;
             btnEditArtist.Click += btnEditArtist_Click;
             // 
             // listViewArtists
             // 
-            listViewArtists.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            resources.ApplyResources(listViewArtists, "listViewArtists");
             listViewArtists.BackColor = Color.FromArgb(35, 35, 35);
-            listViewArtists.Font = new Font("Segoe UI", 12F);
             listViewArtists.ForeColor = Color.White;
             listViewArtists.LargeImageList = imageListArtists;
-            listViewArtists.Location = new Point(8, 39);
             listViewArtists.MultiSelect = false;
             listViewArtists.Name = "listViewArtists";
             listViewArtists.OwnerDraw = true;
-            listViewArtists.Size = new Size(351, 375);
-            listViewArtists.TabIndex = 4;
             listViewArtists.TileSize = new Size(300, 76);
             listViewArtists.UseCompatibleStateImageBehavior = false;
             listViewArtists.View = View.Tile;
@@ -362,44 +399,34 @@
             // imageListArtists
             // 
             imageListArtists.ColorDepth = ColorDepth.Depth32Bit;
-            imageListArtists.ImageSize = new Size(64, 64);
+            resources.ApplyResources(imageListArtists, "imageListArtists");
             imageListArtists.TransparentColor = Color.Transparent;
             // 
             // btnDeleteArtist
             // 
             btnDeleteArtist.BackColor = Color.FromArgb(35, 35, 35);
-            btnDeleteArtist.Location = new Point(173, 10);
+            resources.ApplyResources(btnDeleteArtist, "btnDeleteArtist");
             btnDeleteArtist.Name = "btnDeleteArtist";
-            btnDeleteArtist.Size = new Size(81, 23);
-            btnDeleteArtist.TabIndex = 3;
-            btnDeleteArtist.Text = "Delete Artist";
             btnDeleteArtist.UseVisualStyleBackColor = false;
             btnDeleteArtist.Click += btnDeleteArtist_Click;
             // 
             // btnAddArtist
             // 
             btnAddArtist.BackColor = Color.FromArgb(35, 35, 35);
-            btnAddArtist.Location = new Point(8, 10);
+            resources.ApplyResources(btnAddArtist, "btnAddArtist");
             btnAddArtist.Name = "btnAddArtist";
-            btnAddArtist.Size = new Size(76, 23);
-            btnAddArtist.TabIndex = 2;
-            btnAddArtist.Text = "Add Artist";
             btnAddArtist.UseVisualStyleBackColor = false;
             btnAddArtist.Click += btnAddArtist_Click;
             // 
             // listViewArtistSongs
             // 
-            listViewArtistSongs.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            resources.ApplyResources(listViewArtistSongs, "listViewArtistSongs");
             listViewArtistSongs.BackColor = Color.FromArgb(35, 35, 35);
-            listViewArtistSongs.Font = new Font("Segoe UI", 12F);
             listViewArtistSongs.ForeColor = Color.White;
             listViewArtistSongs.LargeImageList = imageListSongs;
-            listViewArtistSongs.Location = new Point(8, 39);
             listViewArtistSongs.MultiSelect = false;
             listViewArtistSongs.Name = "listViewArtistSongs";
             listViewArtistSongs.OwnerDraw = true;
-            listViewArtistSongs.Size = new Size(398, 375);
-            listViewArtistSongs.TabIndex = 7;
             listViewArtistSongs.TileSize = new Size(300, 76);
             listViewArtistSongs.UseCompatibleStateImageBehavior = false;
             listViewArtistSongs.View = View.Tile;
@@ -407,46 +434,84 @@
             // 
             // label2
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(8, 14);
+            resources.ApplyResources(label2, "label2");
             label2.Name = "label2";
-            label2.Size = new Size(130, 15);
-            label2.TabIndex = 1;
-            label2.Text = "Songs by selected artist";
+            // 
+            // tabAlbums
+            // 
+            tabAlbums.BackColor = Color.FromArgb(30, 30, 30);
+            tabAlbums.Controls.Add(splitContainer3);
+            tabAlbums.Controls.Add(label1);
+            tabAlbums.ForeColor = Color.White;
+            resources.ApplyResources(tabAlbums, "tabAlbums");
+            tabAlbums.Name = "tabAlbums";
+            // 
+            // label1
+            // 
+            resources.ApplyResources(label1, "label1");
+            label1.Name = "label1";
+            // 
+            // tabSongs
+            // 
+            tabSongs.BackColor = Color.FromArgb(30, 30, 30);
+            tabSongs.Controls.Add(splitContainer2);
+            tabSongs.ForeColor = Color.White;
+            resources.ApplyResources(tabSongs, "tabSongs");
+            tabSongs.Name = "tabSongs";
+            // 
+            // tabArtists
+            // 
+            tabArtists.BackColor = Color.FromArgb(30, 30, 30);
+            tabArtists.Controls.Add(splitContainer1);
+            tabArtists.ForeColor = Color.White;
+            resources.ApplyResources(tabArtists, "tabArtists");
+            tabArtists.Name = "tabArtists";
             // 
             // tabControlMain
             // 
             tabControlMain.Controls.Add(tabArtists);
             tabControlMain.Controls.Add(tabSongs);
             tabControlMain.Controls.Add(tabAlbums);
-            tabControlMain.Dock = DockStyle.Fill;
-            tabControlMain.Location = new Point(0, 0);
+            resources.ApplyResources(tabControlMain, "tabControlMain");
             tabControlMain.Name = "tabControlMain";
             tabControlMain.SelectedIndex = 0;
-            tabControlMain.Size = new Size(800, 450);
-            tabControlMain.TabIndex = 0;
             tabControlMain.SelectedIndexChanged += tabControlMain_SelectedIndexChanged;
+            // 
+            // imageListAlbumSongs
+            // 
+            imageListAlbumSongs.ColorDepth = ColorDepth.Depth32Bit;
+            resources.ApplyResources(imageListAlbumSongs, "imageListAlbumSongs");
+            imageListAlbumSongs.TransparentColor = Color.Transparent;
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            resources.ApplyResources(this, "$this");
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(30, 30, 30);
-            ClientSize = new Size(800, 450);
             Controls.Add(tabControlMain);
             Name = "MainForm";
-            Text = "Music Manager";
             Load += MainForm_Load;
-            tabAlbums.ResumeLayout(false);
-            tabAlbums.PerformLayout();
-            tabSongs.ResumeLayout(false);
-            tabSongs.PerformLayout();
-            tabArtists.ResumeLayout(false);
+            splitContainer3.Panel1.ResumeLayout(false);
+            splitContainer3.Panel1.PerformLayout();
+            splitContainer3.Panel2.ResumeLayout(false);
+            splitContainer3.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer3).EndInit();
+            splitContainer3.ResumeLayout(false);
+            splitContainer2.Panel1.ResumeLayout(false);
+            splitContainer2.Panel2.ResumeLayout(false);
+            splitContainer2.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
+            splitContainer2.ResumeLayout(false);
             splitContainer1.Panel1.ResumeLayout(false);
+            splitContainer1.Panel1.PerformLayout();
             splitContainer1.Panel2.ResumeLayout(false);
             splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
+            tabAlbums.ResumeLayout(false);
+            tabAlbums.PerformLayout();
+            tabSongs.ResumeLayout(false);
+            tabArtists.ResumeLayout(false);
             tabControlMain.ResumeLayout(false);
             ResumeLayout(false);
         }
@@ -481,5 +546,19 @@
         private ListView listViewArtistSongs;
         private Label label3;
         private ListView listViewSongAlbums;
+        private ImageList imageListAlbumSongs;
+        private SplitContainer splitContainer2;
+        private SplitContainer splitContainer3;
+        private Button btnFilterSongs;
+        private Button btnClearFilters;
+        private Label label4;
+        private Button btnClearArtistsFilters;
+        private Button btnFilterArtists;
+        private Label label5;
+        private TextBox txtArtistFilter;
+        private Label label6;
+        private TextBox txtAlbumFilter;
+        private Button btnClearAlbumsFilter;
+        private Button btnFilterAlbums;
     }
 }

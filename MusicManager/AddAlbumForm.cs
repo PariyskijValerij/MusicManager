@@ -18,7 +18,7 @@ namespace MusicManager
 
             var artistsWithNone = new List<Artist>
             {
-                new Artist { Id = 0, Name = "Без виконавця" }
+                new Artist { Id = 0, Name = "Unknown Artist" }
             };
             artistsWithNone.AddRange(artists);
 

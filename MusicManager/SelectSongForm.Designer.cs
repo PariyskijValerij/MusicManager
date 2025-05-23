@@ -34,6 +34,7 @@
             label1 = new Label();
             btnOK = new Button();
             btnCancel = new Button();
+            btnFilterSongs = new Button();
             SuspendLayout();
             // 
             // listViewSongs
@@ -96,12 +97,25 @@
             btnCancel.UseVisualStyleBackColor = false;
             btnCancel.Click += btnCancel_Click;
             // 
+            // btnFilterSongs
+            // 
+            btnFilterSongs.BackColor = Color.FromArgb(35, 35, 35);
+            btnFilterSongs.ForeColor = Color.White;
+            btnFilterSongs.Location = new Point(250, 10);
+            btnFilterSongs.Name = "btnFilterSongs";
+            btnFilterSongs.Size = new Size(88, 23);
+            btnFilterSongs.TabIndex = 14;
+            btnFilterSongs.Text = "Filter Songs";
+            btnFilterSongs.UseVisualStyleBackColor = false;
+            btnFilterSongs.Click += btnFilterSongs_Click;
+            // 
             // SelectSongForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(30, 30, 30);
             ClientSize = new Size(507, 450);
+            Controls.Add(btnFilterSongs);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
             Controls.Add(label1);
@@ -120,5 +134,6 @@
         private Button btnOK;
         private Button btnCancel;
         private ImageList imageListSongs;
+        private Button btnFilterSongs;
     }
 }
