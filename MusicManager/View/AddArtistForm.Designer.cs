@@ -34,6 +34,8 @@
             btnChooseImage = new Button();
             btnOK = new Button();
             btnCancel = new Button();
+            label4 = new Label();
+            txtLink = new TextBox();
             ((System.ComponentModel.ISupportInitialize)pictureBoxArtist).BeginInit();
             SuspendLayout();
             // 
@@ -67,7 +69,7 @@
             // btnChooseImage
             // 
             btnChooseImage.BackColor = Color.FromArgb(35, 35, 35);
-            btnChooseImage.Location = new Point(12, 190);
+            btnChooseImage.Location = new Point(12, 80);
             btnChooseImage.Name = "btnChooseImage";
             btnChooseImage.Size = new Size(109, 23);
             btnChooseImage.TabIndex = 3;
@@ -97,12 +99,33 @@
             btnCancel.UseVisualStyleBackColor = false;
             btnCancel.Click += btnCancel_Click;
             // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Font = new Font("Segoe UI", 12F);
+            label4.Location = new Point(12, 206);
+            label4.Name = "label4";
+            label4.Size = new Size(39, 21);
+            label4.TabIndex = 13;
+            label4.Text = "Link";
+            // 
+            // txtLink
+            // 
+            txtLink.BackColor = Color.FromArgb(35, 35, 35);
+            txtLink.ForeColor = Color.White;
+            txtLink.Location = new Point(12, 230);
+            txtLink.Name = "txtLink";
+            txtLink.Size = new Size(349, 23);
+            txtLink.TabIndex = 12;
+            // 
             // AddArtistForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(30, 30, 30);
             ClientSize = new Size(391, 319);
+            Controls.Add(label4);
+            Controls.Add(txtLink);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
             Controls.Add(btnChooseImage);
@@ -127,5 +150,7 @@
         private Button btnChooseImage;
         private Button btnOK;
         private Button btnCancel;
+        private Label label4;
+        private TextBox txtLink;
     }
 }

@@ -206,6 +206,7 @@
             listViewAlbumSongs.UseCompatibleStateImageBehavior = false;
             listViewAlbumSongs.View = View.Tile;
             listViewAlbumSongs.DrawItem += listViewAlbumSongs_DrawItem;
+            listViewAlbumSongs.DoubleClick += listViewAlbumSongs_DoubleClick;
             // 
             // imageListSongs
             // 
@@ -279,6 +280,7 @@
             listViewAllSongs.View = View.Tile;
             listViewAllSongs.DrawItem += listViewAllSongs_DrawItem;
             listViewAllSongs.SelectedIndexChanged += listViewAllSongs_SelectedIndexChanged;
+            listViewAllSongs.DoubleClick += listViewAllSongs_DoubleClick;
             // 
             // btnAddSong
             // 
@@ -395,6 +397,7 @@
             listViewArtists.View = View.Tile;
             listViewArtists.DrawItem += listViewArtists_DrawItem;
             listViewArtists.SelectedIndexChanged += listViewArtists_SelectedIndexChanged;
+            listViewArtists.DoubleClick += listViewArtists_DoubleClick;
             // 
             // imageListArtists
             // 
@@ -431,6 +434,7 @@
             listViewArtistSongs.UseCompatibleStateImageBehavior = false;
             listViewArtistSongs.View = View.Tile;
             listViewArtistSongs.DrawItem += listViewArtistSongs_DrawItem;
+            listViewArtistSongs.DoubleClick += listViewArtistSongs_DoubleClick;
             // 
             // label2
             // 

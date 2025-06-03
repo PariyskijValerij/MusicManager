@@ -34,12 +34,14 @@
             comboArtist = new ComboBox();
             label3 = new Label();
             numericYear = new NumericUpDown();
-            pictureBoxImage = new PictureBox();
+            pictureBoxSong = new PictureBox();
             btnChooseImage = new Button();
             btnOK = new Button();
             btnCancel = new Button();
+            txtLink = new TextBox();
+            label4 = new Label();
             ((System.ComponentModel.ISupportInitialize)numericYear).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBoxImage).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxSong).BeginInit();
             SuspendLayout();
             // 
             // label1
@@ -65,7 +67,7 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 12F);
-            label2.Location = new Point(12, 66);
+            label2.Location = new Point(10, 65);
             label2.Name = "label2";
             label2.Size = new Size(47, 21);
             label2.TabIndex = 2;
@@ -105,19 +107,19 @@
             numericYear.TabIndex = 5;
             numericYear.Value = new decimal(new int[] { 1900, 0, 0, 0 });
             // 
-            // pictureBoxImage
+            // pictureBoxSong
             // 
-            pictureBoxImage.Location = new Point(190, 40);
-            pictureBoxImage.Name = "pictureBoxImage";
-            pictureBoxImage.Size = new Size(180, 180);
-            pictureBoxImage.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBoxImage.TabIndex = 6;
-            pictureBoxImage.TabStop = false;
+            pictureBoxSong.Location = new Point(190, 40);
+            pictureBoxSong.Name = "pictureBoxSong";
+            pictureBoxSong.Size = new Size(180, 180);
+            pictureBoxSong.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBoxSong.TabIndex = 6;
+            pictureBoxSong.TabStop = false;
             // 
             // btnChooseImage
             // 
             btnChooseImage.BackColor = Color.FromArgb(35, 35, 35);
-            btnChooseImage.Location = new Point(11, 197);
+            btnChooseImage.Location = new Point(10, 188);
             btnChooseImage.Name = "btnChooseImage";
             btnChooseImage.Size = new Size(149, 23);
             btnChooseImage.TabIndex = 7;
@@ -147,16 +149,37 @@
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = false;
             // 
+            // txtLink
+            // 
+            txtLink.BackColor = Color.FromArgb(35, 35, 35);
+            txtLink.ForeColor = Color.White;
+            txtLink.Location = new Point(12, 243);
+            txtLink.Name = "txtLink";
+            txtLink.Size = new Size(358, 23);
+            txtLink.TabIndex = 10;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Font = new Font("Segoe UI", 12F);
+            label4.Location = new Point(12, 219);
+            label4.Name = "label4";
+            label4.Size = new Size(39, 21);
+            label4.TabIndex = 11;
+            label4.Text = "Link";
+            // 
             // AddSongForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(30, 30, 30);
             ClientSize = new Size(391, 319);
+            Controls.Add(label4);
+            Controls.Add(txtLink);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
             Controls.Add(btnChooseImage);
-            Controls.Add(pictureBoxImage);
+            Controls.Add(pictureBoxSong);
             Controls.Add(numericYear);
             Controls.Add(label3);
             Controls.Add(comboArtist);
@@ -168,9 +191,8 @@
             Name = "AddSongForm";
             StartPosition = FormStartPosition.CenterParent;
             Text = "AddSong";
-            Load += AddSongForm_Load;
             ((System.ComponentModel.ISupportInitialize)numericYear).EndInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBoxImage).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxSong).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -183,9 +205,11 @@
         private ComboBox comboArtist;
         private Label label3;
         private NumericUpDown numericYear;
-        private PictureBox pictureBoxImage;
+        private PictureBox pictureBoxSong;
         private Button btnChooseImage;
         private Button btnOK;
         private Button btnCancel;
+        private TextBox txtLink;
+        private Label label4;
     }
 }

@@ -1,21 +1,11 @@
 using MusicManager.Models;
-using Newtonsoft.Json;
 
 namespace MusicManager
 {
     public partial class MainForm : Form
     {
-        private List<Artist> artists = new List<Artist>();
-        private Dictionary<int, List<string>> artistSongs = new Dictionary<int, List<string>>();
-        private int artistIdCounter = 1;
-        private string selectedArtistImagePath = "";
-
-        private List<Song> songs = new List<Song>();
-        private int songIdCounter = 1;
-
-        private List<Album> albums = new();
-        private List<AlbumSongLink> albumSongLinks = new();
-        private int albumIdCounter = 1;
+        private AppData appData;
+        private Artist artist;
 
         public MainForm()
         {
@@ -28,6 +18,10 @@ namespace MusicManager
             LoadData();
         }
 
+
+        /////////////
+        ///Artists///
+        /////////////
         private void tabControlMain_SelectedIndexChanged(object sender, EventArgs e)
         {
             listViewArtists.SelectedItems.Clear();
@@ -41,39 +35,12 @@ namespace MusicManager
         private void btnAddArtist_Click(object sender, EventArgs e)
         {
             listViewArtists.SelectedItems.Clear();
-            var form = new AddArtistForm();
+            var form = new AddArtistForm(appData);
 
             if (form.ShowDialog() == DialogResult.OK)
             {
-                string name = form.ArtistName;
-                string imageFileName = "Images/default_artist.png";
-
-                if (!string.IsNullOrEmpty(form.ImagePath) && (File.Exists(form.ImagePath)))
-                {
-                    string imagesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
-                    Directory.CreateDirectory(imagesFolder);
-
-                    string newFileName = $"artist_{artistIdCounter}" + Path.GetExtension(form.ImagePath);
-                    string newPath = Path.Combine(imagesFolder, newFileName);
-
-                    File.Copy(form.ImagePath, newPath, true);
-                    imageFileName = newPath;
-                }
-
-                var artist = new Artist
-                {
-                    Id = artistIdCounter,
-                    Name = name,
-                    ImagePath = imageFileName
-                };
-
-                artists.Add(artist);
-                artistSongs[artist.Id] = new List<string>();
-                artistIdCounter++;
-
                 RefreshArtistList();
                 RefreshSongList();
-                SaveData();
             }
         }
 
@@ -88,7 +55,8 @@ namespace MusicManager
             var selectedItem = listViewArtists.SelectedItems[0];
             int selectedId = (int)selectedItem.Tag;
 
-            var artistToRemove = artists.FirstOrDefault(a => a.Id == selectedId);
+            var artistToRemove = Artist.GetArtistById(appData, selectedId);
+
 
             if (artistToRemove != null)
             {
@@ -110,12 +78,12 @@ namespace MusicManager
                 if (confirm != DialogResult.Yes)
                     return;
 
-                var removedSongIds = songs.Where(s => s.ArtistId == selectedId).Select(s => s.Id).ToList();
-                songs.RemoveAll(s => s.ArtistId == selectedId);
-                albumSongLinks.RemoveAll(link => removedSongIds.Contains(link.SongId));
+                var removedSongIds = appData.Songs.Where(s => s.ArtistId == selectedId).Select(s => s.Id).ToList();
+                appData.Songs.RemoveAll(s => s.ArtistId == selectedId);
+                appData.AlbumSongLinks.RemoveAll(link => removedSongIds.Contains(link.SongId));
 
-                artists.Remove(artistToRemove);
-                artistSongs.Remove(selectedId);
+                appData.Artists.Remove(artistToRemove);
+                appData.ArtistSongs.Remove(selectedId);
             }
 
             listViewArtistSongs.Items.Clear();
@@ -135,35 +103,17 @@ namespace MusicManager
 
             var selectedItem = listViewArtists.SelectedItems[0];
             int artistId = (int)selectedItem.Tag;
-            var artist = artists.FirstOrDefault(a => a.Id == artistId);
+            var artist = Artist.GetArtistById(appData, artistId);
             if (artist == null)
             {
                 return;
             }
 
-            var form = new AddArtistForm(artist);
+            var form = new AddArtistForm(appData, artist);
 
             if (form.ShowDialog() == DialogResult.OK)
             {
-                artist.Name = form.ArtistName;
-
-                if (!string.IsNullOrEmpty(form.ImagePath) && File.Exists(form.ImagePath))
-                {
-                    string imagesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
-                    Directory.CreateDirectory(imagesFolder);
-
-                    string newFileName = $"artist_{artist.Id}" + Path.GetExtension(form.ImagePath);
-                    string newPath = Path.Combine(imagesFolder, newFileName);
-
-                    if (!string.Equals(form.ImagePath, newPath, StringComparison.OrdinalIgnoreCase))
-                    {
-                        File.Copy(form.ImagePath, newPath, true);
-                    }
-                    artist.ImagePath = newPath;
-                }
-
                 RefreshArtistList();
-                SaveData();
             }
         }
 
@@ -174,7 +124,7 @@ namespace MusicManager
             imageListArtists.Images.Clear();
 
             var filteredArtists = string.IsNullOrEmpty(filter) ?
-                artists : artists.Where(a => a.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+                appData.Artists : appData.Artists.Where(a => a.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
 
             foreach (var artist in filteredArtists)
             {
@@ -214,10 +164,49 @@ namespace MusicManager
             RefreshArtistList();
         }
 
+        private void listViewArtists_DoubleClick(object sender, EventArgs e)
+        {
+            if (listViewArtists.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            var item = listViewArtists.SelectedItems[0];
+            var song = Song.GetByImageKey(appData, item.ImageKey);
+
+            if (artist == null)
+            {
+                MessageBox.Show("Artist not found.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(artist.ExternalLink))
+            {
+                MessageBox.Show("This song is not linked to any external source.");
+                return;
+            }
+
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = artist.ExternalLink,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open link: {ex.Message}");
+            }
+        }
+
         private void listViewArtists_DrawItem(object sender, DrawListViewItemEventArgs e)
         {
-            var artist = artists.FirstOrDefault(a => a.Id.ToString() == e.Item.ImageKey);
+            var artist = Artist.GetByImageKey(appData, e.Item.ImageKey);
             if (artist == null) return;
+
+            string linkStatus = string.IsNullOrWhiteSpace(artist.ExternalLink) ? "[Unlinked]" : "[Linked]";
+            string displayTitle = $"{artist.Name} {linkStatus}";
 
             Font nameFont = new Font("Segoe UI", 10, FontStyle.Bold);
             Color textColor = Color.White;
@@ -239,7 +228,7 @@ namespace MusicManager
 
             int textX = imageRect.Right + 10;
             int textY = imageRect.Top + 20;
-            e.Graphics.DrawString(artist.Name, nameFont, new SolidBrush(textColor), new PointF(textX, textY));
+            e.Graphics.DrawString(displayTitle, nameFont, new SolidBrush(textColor), new PointF(textX, textY));
         }
 
         private void listViewArtists_SelectedIndexChanged(object sender, EventArgs e)
@@ -253,7 +242,7 @@ namespace MusicManager
             }
 
             int artistId = (int)listViewArtists.SelectedItems[0].Tag;
-            var artistSongsList = songs.Where(s => s.ArtistId == artistId).OrderBy(s => s.Title);
+            var artistSongsList = appData.Songs.Where(s => s.ArtistId == artistId).OrderBy(s => s.Title);
 
             foreach (var song in artistSongsList)
             {
@@ -288,10 +277,49 @@ namespace MusicManager
             }
         }
 
+        private void listViewArtistSongs_DoubleClick(object sender, EventArgs e)
+        {
+            if (listViewArtistSongs.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            var item = listViewArtistSongs.SelectedItems[0];
+            var song = Song.GetByImageKey(appData, item.ImageKey);
+
+            if (song == null)
+            {
+                MessageBox.Show("Song not found.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(song.ExternalLink))
+            {
+                MessageBox.Show("This song is not linked to any external source.");
+                return;
+            }
+
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = song.ExternalLink,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open link: {ex.Message}");
+            }
+        }
+
         private void listViewArtistSongs_DrawItem(object sender, DrawListViewItemEventArgs e)
         {
-            var song = songs.FirstOrDefault(s => s.Id.ToString() == e.Item.ImageKey);
-            var artist = artists.FirstOrDefault(a => a.Id == song?.ArtistId);
+            var song = Song.GetByImageKey(appData, e.Item.ImageKey);
+            var artist = Artist.GetBySongId(appData, song?.ArtistId);
+
+            string linkStatus = string.IsNullOrWhiteSpace(song.ExternalLink) ? "[Unlinked]" : "[Linked]";
+            string displayTitle = $"{song.Title} {linkStatus}";
 
             Font titleFont = new Font("Segoe UI", 10, FontStyle.Bold);
             Font artistFont = new Font("Segoe UI", 8, FontStyle.Regular);
@@ -316,7 +344,7 @@ namespace MusicManager
             int textX = imageRect.Right + 10;
             int textY = imageRect.Top;
 
-            e.Graphics.DrawString(song.Title, titleFont, new SolidBrush(textColor), new PointF(textX, textY));
+            e.Graphics.DrawString(displayTitle, titleFont, new SolidBrush(textColor), new PointF(textX, textY));
             e.Graphics.DrawString(artist.Name, artistFont, new SolidBrush(Color.LightGray), new PointF(textX, textY + 22));
             e.Graphics.DrawString(song.Year.ToString(), yearFont, new SolidBrush(Color.Silver), new PointF(textX, textY + 40));
         }
@@ -326,7 +354,7 @@ namespace MusicManager
             listViewArtists.Items.Clear();
             imageListArtists.Images.Clear();
 
-            foreach (var artist in artists.OrderBy(a => a.Name))
+            foreach (var artist in appData.Artists.OrderBy(a => a.Name))
             {
                 string path = File.Exists(artist.ImagePath)
                     ? artist.ImagePath
@@ -360,42 +388,15 @@ namespace MusicManager
         }
 
 
-
+        ////////////
+        ///Songs////
+        ////////////
         private void btnAddSong_Click(object sender, EventArgs e)
         {
-            var form = new AddSongForm(artists);
+            var form = new AddSongForm(appData);
 
             if (form.ShowDialog() == DialogResult.OK)
             {
-                string title = form.SongTitle;
-                int artistId = form.SelectedArtistId;
-                int year = form.ReleaseYear;
-                string songImagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "default_song.png");
-
-                if (!string.IsNullOrEmpty(form.ImagePath) && File.Exists(form.ImagePath))
-                {
-                    string imagesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
-                    Directory.CreateDirectory(imagesFolder);
-
-                    string newFileName = $"song_{songIdCounter}" + Path.GetExtension(form.ImagePath);
-                    string newPath = Path.Combine(imagesFolder, newFileName);
-
-                    File.Copy(form.ImagePath, newPath, true);
-                    songImagePath = newPath;
-                }
-
-                var newSong = new Song
-                {
-                    Id = songIdCounter++,
-                    Title = title,
-                    ArtistId = artistId,
-                    Year = year,
-                    ImagePath = songImagePath
-                };
-
-                songs.Add(newSong);
-                artistSongs[artistId].Add(title);
-
                 RefreshSongList();
                 SaveData();
             }
@@ -412,7 +413,7 @@ namespace MusicManager
             var selectedItem = listViewAllSongs.SelectedItems[0];
             int songId = (int)selectedItem.Tag;
 
-            var songToRemove = songs.FirstOrDefault(s => s.Id == songId);
+            var songToRemove = Song.GetSongById(appData, songId);
 
             if (songToRemove != null)
             {
@@ -425,8 +426,8 @@ namespace MusicManager
                 if (confirm != DialogResult.Yes)
                     return;
 
-                songs.Remove(songToRemove);
-                if (artistSongs.TryGetValue(songToRemove.ArtistId, out var list))
+                appData.Songs.Remove(songToRemove);
+                if (appData.ArtistSongs.TryGetValue(songToRemove.ArtistId, out var list))
                 {
                     list.Remove(songToRemove.Title);
                 }
@@ -449,116 +450,25 @@ namespace MusicManager
             var selectedItem = listViewAllSongs.SelectedItems[0];
             int songId = (int)selectedItem.Tag;
 
-            var song = songs.FirstOrDefault(s => s.Id == songId);
+            var song = Song.GetSongById(appData, songId);
             if (song == null) return;
 
-            var form = new AddSongForm(artists, song);
+            var form = new AddSongForm(appData, song);
 
             if (form.ShowDialog() == DialogResult.OK)
             {
-                song.Title = form.SongTitle;
-                song.ArtistId = form.SelectedArtistId;
-                song.Year = form.ReleaseYear;
-
-                if (!string.IsNullOrEmpty(form.ImagePath) && File.Exists(form.ImagePath))
-                {
-                    string imageFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
-                    Directory.CreateDirectory(imageFolder);
-
-                    string newFileName = $"song_{song.Id}" + Path.GetExtension(form.ImagePath);
-                    string newPath = Path.Combine(imageFolder, newFileName);
-
-                    if (!string.Equals(form.ImagePath, newPath, StringComparison.OrdinalIgnoreCase))
-                    {
-                        File.Copy(form.ImagePath, newPath, true);
-                    }
-                    song.ImagePath = newPath;
-                }
-
                 RefreshSongList();
-                SaveData();
             }
         }
         private void btnFilterSongs_Click(object sender, EventArgs e)
         {
-            var filterForm = new SongsFilterForm(artists);
-            while (true)
-            {
-                if (filterForm.ShowDialog() != DialogResult.OK)
-                {
-                    break;
-                }
+            var filterForm = new SongsFilterForm(appData, listViewAllSongs, imageListSongs);
+            filterForm.ShowDialog();
+        }
 
-                var filteredSongs = songs.AsEnumerable();
-
-                if (!string.IsNullOrEmpty(filterForm.SongTitle))
-                {
-                    filteredSongs = filteredSongs.Where(s => s.Title.Contains(filterForm.SongTitle, StringComparison.OrdinalIgnoreCase));
-                }
-
-                if (filterForm.SelectedArtistId.HasValue)
-                {
-                    filteredSongs = filteredSongs.Where(s => s.ArtistId == filterForm.SelectedArtistId.Value);
-                }
-
-                if (filterForm.YearMin.HasValue)
-                {
-                    filteredSongs = filteredSongs.Where(s => s.Year >= filterForm.YearMin.Value);
-                }
-
-                if (filterForm.YearMax.HasValue)
-                {
-                    filteredSongs = filteredSongs.Where(s => s.Year <= filterForm.YearMax.Value);
-                }
-
-                if (!filteredSongs.Any())
-                {
-                    filterForm.ShowError("Nothing Found");
-                    continue;
-                }
-
-                listViewAllSongs.Items.Clear();
-                imageListSongs.Images.Clear();
-
-
-                foreach (var song in filteredSongs.OrderBy(s => s.Title))
-                {
-                    var artist = artists.FirstOrDefault(a => a.Id == song.ArtistId);
-                    if (artist == null) continue;
-
-                    string imageKey = song.Id.ToString();
-                    string imagePath = File.Exists(song.ImagePath) ? song.ImagePath :
-                        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "default_song.png");
-
-                    if (!imageListSongs.Images.ContainsKey(imageKey))
-                    {
-                        try
-                        {
-                            using (var temp = Image.FromFile(imagePath))
-                            {
-                                imageListSongs.Images.Add(imageKey, new Bitmap(temp));
-                            }
-                        }
-                        catch
-                        {
-                            using (var temp = Image.FromFile("Images/default_song.png"))
-                            {
-                                imageListSongs.Images.Add(imageKey, new Bitmap(temp));
-                            }
-                        }
-                    }
-
-                    var item = new ListViewItem
-                    {
-                        Text = "",
-                        ImageKey = imageKey,
-                        Tag = song.Id
-                    };
-
-                    listViewAllSongs.Items.Add(item);
-                }
-                break;
-            }
+        private void btnClearFilters_Click(object sender, EventArgs e)
+        {
+            RefreshSongList();
         }
 
         public void RefreshSongList()
@@ -566,9 +476,9 @@ namespace MusicManager
             listViewAllSongs.Items.Clear();
             imageListSongs.Images.Clear();
 
-            foreach (var song in songs.OrderBy(s => s.Title))
+            foreach (var song in appData.Songs.OrderBy(s => s.Title))
             {
-                var artist = artists.FirstOrDefault(a => a.Id == song.ArtistId);
+                var artist = Artist.GetBySongId(appData, song.ArtistId);
                 if (artist == null) continue;
 
                 string imageKey = song.Id.ToString();
@@ -614,13 +524,13 @@ namespace MusicManager
             }
 
             int songId = (int)listViewAllSongs.SelectedItems[0].Tag;
-            var albumIds = albumSongLinks
+            var albumIds = appData.AlbumSongLinks
                 .Where(link => link.SongId == songId)
                 .Select(link => link.AlbumId)
                 .Distinct()
                 .ToList();
 
-            var songAlbums = albums.Where(a => albumIds.Contains(a.Id)).OrderBy(a => a.Title);
+            var songAlbums = appData.Albums.Where(a => albumIds.Contains(a.Id)).OrderBy(a => a.Title);
 
             foreach (var album in songAlbums)
             {
@@ -655,15 +565,92 @@ namespace MusicManager
             }
         }
 
+        private void listViewAllSongs_DoubleClick(object sender, EventArgs e)
+        {
+            if(listViewAllSongs.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            var item = listViewAllSongs.SelectedItems[0];
+            var song = Song.GetByImageKey(appData, item.ImageKey);
+
+            if(song == null)
+            {
+                MessageBox.Show("Song not found.");
+                return;
+            }
+
+            if(string.IsNullOrWhiteSpace(song.ExternalLink))
+            {
+                MessageBox.Show("This song is not linked to any external source.");
+                return;
+            }
+
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = song.ExternalLink,
+                    UseShellExecute = true
+                });
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show($"Failed to open link: {ex.Message}");
+            }
+        }
+
+        private void listViewAllSongs_DrawItem(object sender, DrawListViewItemEventArgs e)
+        {
+            var song = Song.GetByImageKey(appData, e.Item.ImageKey);
+            var artist = Artist.GetBySongId(appData, song?.ArtistId);
+
+            string linkStatus = string.IsNullOrWhiteSpace(song.ExternalLink) ? "[Unlinked]" : "[Linked]";
+            string displayTitle = $"{song.Title} {linkStatus}";
+
+            if (song == null || artist == null)
+            {
+                return;
+            }
+
+            Font titleFont = new Font("Segoe UI", 10, FontStyle.Bold);
+            Font artistFont = new Font("Segoe UI", 8, FontStyle.Regular);
+            Font yearFont = new Font("Segoe UI", 7, FontStyle.Italic);
+            Color textColor = Color.White;
+
+            Color backColor = e.Item.Selected ? Color.FromArgb(100, 100, 100) : e.Item.BackColor;
+            e.Graphics.FillRectangle(new SolidBrush(backColor), e.Bounds);
+
+            if (e.Item.Selected)
+            {
+                Rectangle borderRect = e.Bounds;
+                borderRect.Inflate(-1, -1);
+                using Pen borderPen = new Pen(Color.White, 2);
+                e.Graphics.DrawRectangle(borderPen, borderRect);
+            }
+
+            Image img = imageListSongs.Images[e.Item.ImageKey];
+            Rectangle imageRect = new Rectangle(e.Bounds.X + 5, e.Bounds.Y + 5, 64, 64);
+            e.Graphics.DrawImage(img, imageRect);
+
+            int textX = imageRect.Right + 10;
+            int textY = imageRect.Top;
+
+            e.Graphics.DrawString(displayTitle, titleFont, new SolidBrush(textColor), new PointF(textX, textY));
+            e.Graphics.DrawString(artist.Name, artistFont, new SolidBrush(Color.LightGray), new PointF(textX, textY + 22));
+            e.Graphics.DrawString(song.Year.ToString(), yearFont, new SolidBrush(Color.Silver), new PointF(textX, textY + 40));
+        }
+
         private void listViewSongAlbums_DrawItem(object sender, DrawListViewItemEventArgs e)
         {
-            var album = albums.FirstOrDefault(a => a.Id.ToString() == e.Item.ImageKey);
+            var album = Album.GetByImageKey(appData, e.Item.ImageKey);
             Artist artist = null;
             string artistName = "Власний альбом";
 
             if (album != null && album.ArtistId != null)
             {
-                artist = artists.FirstOrDefault(a => a.Id == album.ArtistId);
+                artist = Artist.GetArtistById(appData, album.ArtistId.Value);
                 if (artist != null)
                 {
                     artistName = artist.Name;
@@ -702,41 +689,16 @@ namespace MusicManager
         }
 
 
-
+        /////////////
+        ///Albums////
+        /////////////
         private void btnAddAlbum_Click(object sender, EventArgs e)
         {
-            var form = new AddAlbumForm(artists);
+            var form = new AddAlbumForm(appData);
 
             if (form.ShowDialog() == DialogResult.OK)
             {
-                string title = form.AlbumTitle;
-                int? artistId = form.SelectedArtistId;
-                string albumImagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "default_album.png");
-
-                if (!string.IsNullOrEmpty(form.ImagePath) && File.Exists(form.ImagePath))
-                {
-                    string imageFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
-                    Directory.CreateDirectory(imageFolder);
-
-                    string newFileName = $"album_{albumIdCounter}" + Path.GetExtension(form.ImagePath);
-                    string newPath = Path.Combine(imageFolder, newFileName);
-
-                    File.Copy(form.ImagePath, newPath, true);
-                    albumImagePath = newPath;
-                }
-
-                var newalbum = new Album
-                {
-                    Id = albumIdCounter++,
-                    Title = title,
-                    ArtistId = artistId,
-                    ImagePath = albumImagePath
-                };
-
-                albums.Add(newalbum);
-
                 RefreshAlbumList();
-                SaveData();
             }
         }
 
@@ -751,7 +713,7 @@ namespace MusicManager
             var selectedItem = listViewAlbums.SelectedItems[0];
             int albumId = (int)selectedItem.Tag;
 
-            var albumToRemove = albums.FirstOrDefault(s => s.Id == albumId);
+            var albumToRemove = Album.GetAlbumById(appData, albumId);
 
             if (albumToRemove != null)
             {
@@ -764,8 +726,8 @@ namespace MusicManager
                 if (confirm != DialogResult.Yes)
                     return;
 
-                albumSongLinks.RemoveAll(link => link.AlbumId == albumId);
-                albums.Remove(albumToRemove);
+                appData.AlbumSongLinks.RemoveAll(link => link.AlbumId == albumId);
+                appData.Albums.Remove(albumToRemove);
             }
 
             listViewAlbumSongs.Items.Clear();
@@ -785,33 +747,14 @@ namespace MusicManager
             var selectedItem = listViewAlbums.SelectedItems[0];
             int albumId = (int)selectedItem.Tag;
 
-            var album = albums.FirstOrDefault(a => a.Id == albumId);
+            var album = Album.GetAlbumById(appData, albumId);
             if (album == null) return;
 
-            var form = new AddAlbumForm(artists, album);
+            var form = new AddAlbumForm(appData, album);
 
             if (form.ShowDialog() == DialogResult.OK)
             {
-                album.Title = form.AlbumTitle;
-                album.ArtistId = form.SelectedArtistId;
-
-                if (!string.IsNullOrEmpty(form.ImagePath) && File.Exists(form.ImagePath))
-                {
-                    string imageFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
-                    Directory.CreateDirectory(imageFolder);
-
-                    string newFileName = $"album_{album.Id}" + Path.GetExtension(form.ImagePath);
-                    string newPath = Path.Combine(imageFolder, newFileName);
-
-                    if (!string.Equals(form.ImagePath, newPath, StringComparison.OrdinalIgnoreCase))
-                    {
-                        File.Copy(form.ImagePath, newPath, true);
-                    }
-                    album.ImagePath = newPath;
-                }
-
                 RefreshAlbumList();
-                SaveData();
             }
         }
 
@@ -824,25 +767,15 @@ namespace MusicManager
             }
 
             int albumId = (int)listViewAlbums.SelectedItems[0].Tag;
-            var album = albums.First(a => a.Id == albumId);
-            List<Song> availableSongs;
+            var album = appData.Albums.First(a => a.Id == albumId);
 
-            if (album.ArtistId == null)
-            {
-                availableSongs = songs;
-            }
-            else
-            {
-                availableSongs = songs.Where(s => s.ArtistId == album.ArtistId).ToList();
-            }
-
-            var existingSongIds = albumSongLinks.Where(link => link.AlbumId == albumId).Select(link => link.SongId).ToList();
-            var selectSongForm = new SelectSongForm(availableSongs, artists, existingSongIds);
+            var existingSongIds = appData.AlbumSongLinks.Where(link => link.AlbumId == albumId).Select(link => link.SongId).ToList();
+            var selectSongForm = new SelectSongForm(appData, existingSongIds, album.ArtistId);
 
             if (selectSongForm.ShowDialog() == DialogResult.OK && selectSongForm.SelectedSongId.HasValue)
             {
                 int selectedSongId = selectSongForm.SelectedSongId.Value;
-                albumSongLinks.Add(new AlbumSongLink { AlbumId = albumId, SongId = selectedSongId });
+                appData.AlbumSongLinks.Add(new AlbumSongLink { AlbumId = albumId, SongId = selectedSongId });
                 SaveData();
             }
             ShowSongsForAlbum(albumId);
@@ -861,56 +794,18 @@ namespace MusicManager
             ShowSongsForAlbum(albumId);
         }
 
-        private void listViewAllSongs_DrawItem(object sender, DrawListViewItemEventArgs e)
-        {
-            var song = songs.FirstOrDefault(s => s.Id.ToString() == e.Item.ImageKey);
-            var artist = artists.FirstOrDefault(a => a.Id == song?.ArtistId);
-
-            if (song == null || artist == null)
-            {
-                return;
-            }
-
-            Font titleFont = new Font("Segoe UI", 10, FontStyle.Bold);
-            Font artistFont = new Font("Segoe UI", 8, FontStyle.Regular);
-            Font yearFont = new Font("Segoe UI", 7, FontStyle.Italic);
-            Color textColor = Color.White;
-
-            Color backColor = e.Item.Selected ? Color.FromArgb(100, 100, 100) : e.Item.BackColor;
-            e.Graphics.FillRectangle(new SolidBrush(backColor), e.Bounds);
-
-            if (e.Item.Selected)
-            {
-                Rectangle borderRect = e.Bounds;
-                borderRect.Inflate(-1, -1);
-                using Pen borderPen = new Pen(Color.White, 2);
-                e.Graphics.DrawRectangle(borderPen, borderRect);
-            }
-
-            Image img = imageListSongs.Images[e.Item.ImageKey];
-            Rectangle imageRect = new Rectangle(e.Bounds.X + 5, e.Bounds.Y + 5, 64, 64);
-            e.Graphics.DrawImage(img, imageRect);
-
-            int textX = imageRect.Right + 10;
-            int textY = imageRect.Top;
-
-            e.Graphics.DrawString(song.Title, titleFont, new SolidBrush(textColor), new PointF(textX, textY));
-            e.Graphics.DrawString(artist.Name, artistFont, new SolidBrush(Color.LightGray), new PointF(textX, textY + 22));
-            e.Graphics.DrawString(song.Year.ToString(), yearFont, new SolidBrush(Color.Silver), new PointF(textX, textY + 40));
-        }
-
         private void ShowSongsForAlbum(int albumId)
         {
             listViewAlbumSongs.Items.Clear();
             imageListAlbumSongs.Images.Clear();
 
-            var songIds = albumSongLinks.Where(link => link.AlbumId == albumId).Select(link => link.SongId).ToList();
+            var songIds = appData.AlbumSongLinks.Where(link => link.AlbumId == albumId).Select(link => link.SongId).ToList();
 
-            var albumsSongs = songs.Where(song => songIds.Contains(song.Id)).ToList();
+            var albumsSongs = appData.Songs.Where(song => songIds.Contains(song.Id)).ToList();
 
             foreach (var song in albumsSongs.OrderBy(s => s.Title))
             {
-                var artist = artists.FirstOrDefault(a => a.Id == song.ArtistId);
+                var artist = Artist.GetBySongId(appData, song.ArtistId);
                 string imageKey = song.Id.ToString();
                 string imagePath = File.Exists(song.ImagePath) ? song.ImagePath :
                     Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "default_song.png");
@@ -944,10 +839,49 @@ namespace MusicManager
 
         }
 
+        private void listViewAlbumSongs_DoubleClick(object sender, EventArgs e)
+        {
+            if (listViewAlbumSongs.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            var item = listViewAlbumSongs.SelectedItems[0];
+            var song = Song.GetByImageKey(appData, item.ImageKey);
+
+            if (song == null)
+            {
+                MessageBox.Show("Song not found.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(song.ExternalLink))
+            {
+                MessageBox.Show("This song is not linked to any external source.");
+                return;
+            }
+
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = song.ExternalLink,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open link: {ex.Message}");
+            }
+        }
+
         private void listViewAlbumSongs_DrawItem(object sender, DrawListViewItemEventArgs e)
         {
-            var song = songs.FirstOrDefault(s => s.Id.ToString() == e.Item.ImageKey);
-            var artist = artists.FirstOrDefault(a => a.Id == song?.ArtistId);
+            var song = Song.GetByImageKey(appData, e.Item.ImageKey);
+            var artist = Artist.GetBySongId(appData, song?.ArtistId);
+
+            string linkStatus = string.IsNullOrWhiteSpace(song.ExternalLink) ? "[Unlinked]" : "[Linked]";
+            string displayTitle = $"{song.Title} {linkStatus}";
 
             if (song == null || artist == null)
             {
@@ -977,7 +911,7 @@ namespace MusicManager
             int textX = imageRect.Right + 10;
             int textY = imageRect.Top;
 
-            e.Graphics.DrawString(song.Title, titleFont, new SolidBrush(textColor), new PointF(textX, textY));
+            e.Graphics.DrawString(displayTitle, titleFont, new SolidBrush(textColor), new PointF(textX, textY));
             e.Graphics.DrawString(artist.Name, artistFont, new SolidBrush(Color.LightGray), new PointF(textX, textY + 22));
             e.Graphics.DrawString(song.Year.ToString(), yearFont, new SolidBrush(Color.Silver), new PointF(textX, textY + 40));
         }
@@ -998,10 +932,10 @@ namespace MusicManager
             int albumId = (int)listViewAlbums.SelectedItems[0].Tag;
             int songId = (int)listViewAlbumSongs.SelectedItems[0].Tag;
 
-            var link = albumSongLinks.FirstOrDefault(l => l.AlbumId == albumId && l.SongId == songId);
+            var link = AlbumSongLink.GetByAlbumAndSong(appData, albumId, songId);
             if (link != null)
             {
-                var song = songs.FirstOrDefault(s => s.Id == songId);
+                var song = Song.GetSongById(appData, songId);
                 var confirm = MessageBox.Show(
                     $"Do you really want to delete a song \"{song?.Title}\" from album?",
                     "Confirm",
@@ -1012,7 +946,7 @@ namespace MusicManager
                     return;
 
                 imageListAlbumSongs.Images.Clear();
-                albumSongLinks.Remove(link);
+                appData.AlbumSongLinks.Remove(link);
                 ShowSongsForAlbum(albumId);
                 SaveData();
             }
@@ -1025,7 +959,7 @@ namespace MusicManager
             imageListAlbums.Images.Clear();
 
             var filteredAlbums = string.IsNullOrEmpty(filter) ?
-                albums : albums.Where(a => a.Title.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+                appData.Albums : appData.Albums.Where(a => a.Title.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
 
             foreach (var album in filteredAlbums)
             {
@@ -1071,9 +1005,9 @@ namespace MusicManager
             listViewAlbums.Items.Clear();
             imageListAlbums.Images.Clear();
 
-            foreach (var album in albums.OrderBy(a => a.Title))
+            foreach (var album in appData.Albums.OrderBy(a => a.Title))
             {
-                var artist = artists.FirstOrDefault(a => a.Id == album.ArtistId);
+                var artist = Artist.GetArtistById(appData, album.ArtistId ?? 0);
 
                 string imageKey = album.Id.ToString();
                 string imagePath = File.Exists(album.ImagePath) ? album.ImagePath :
@@ -1112,13 +1046,13 @@ namespace MusicManager
 
         private void listViewAlbums_DrawItem(object sender, DrawListViewItemEventArgs e)
         {
-            var album = albums.FirstOrDefault(a => a.Id.ToString() == e.Item.ImageKey);
+            var album = Album.GetByImageKey(appData, e.Item.ImageKey);
             Artist artist = null;
             string artistName = "My album";
 
             if (album != null && album.ArtistId != null)
             {
-                artist = artists.FirstOrDefault(a => a.Id == album.ArtistId);
+                artist = Artist.GetArtistById(appData, album.ArtistId.Value);
                 if (artist != null)
                 {
                     artistName = artist.Name;
@@ -1156,57 +1090,48 @@ namespace MusicManager
             e.Graphics.DrawString(artistName, artistFont, new SolidBrush(Color.LightGray), new PointF(textX, textY + 22));
         }
 
+
+
+        ///////////////////////////
+        ////Load and Save Data/////
+        ///////////////////////////
         private void SaveData()
         {
-            var appData = new AppData
-            {
-                Artists = this.artists,
-                ArtistSongs = this.artistSongs,
-                Songs = this.songs,
-                ArtistIdCounter = this.artistIdCounter,
-                SongIdCounter = this.songIdCounter,
-                Albums = this.albums,
-                AlbumSongLinks = this.albumSongLinks,
-                AlbumIdCounter = this.albumIdCounter
-            };
-
-            string json = JsonConvert.SerializeObject(appData, Formatting.Indented);
-            File.WriteAllText("data.json", json);
+            appData.Save("data.json");
         }
 
         private void LoadData()
         {
-            if (File.Exists("data.json"))
-            {
-                string json = File.ReadAllText("data.json");
-                var appData = JsonConvert.DeserializeObject<AppData>(json);
+            //if (File.Exists("data.json"))
+            //{
+            //    string json = File.ReadAllText("data.json");
+            //    var appData = JsonConvert.DeserializeObject<AppData>(json);
 
-                this.artists = appData.Artists ?? new List<Artist>();
-                this.artistSongs = appData.ArtistSongs ?? new Dictionary<int, List<string>>();
-                this.songs = appData.Songs ?? new List<Song>();
-                this.artistIdCounter = appData.ArtistIdCounter;
-                this.songIdCounter = appData.SongIdCounter;
-                this.albums = appData.Albums ?? new List<Album>();
-                this.albumSongLinks = appData.AlbumSongLinks ?? new List<AlbumSongLink>();
-                this.albumIdCounter = appData.AlbumIdCounter;
+            //    this.artists = appData.Artists ?? new List<Artist>();
+            //    this.artistSongs = appData.ArtistSongs ?? new Dictionary<int, List<string>>();
+            //    this.songs = appData.Songs ?? new List<Song>();
+            //    this.artistIdCounter = appData.ArtistIdCounter;
+            //    this.songIdCounter = appData.SongIdCounter;
+            //    this.albums = appData.Albums ?? new List<Album>();
+            //    this.albumSongLinks = appData.AlbumSongLinks ?? new List<AlbumSongLink>();
+            //    this.albumIdCounter = appData.AlbumIdCounter;
 
-                foreach (var album in this.albums)
-                {
-                    if (album.ArtistId == 0)
-                    {
-                        album.ArtistId = null;
-                    }
-                }
+            //    foreach (var album in this.albums)
+            //    {
+            //        if (album.ArtistId == 0)
+            //        {
+            //            album.ArtistId = null;
+            //        }
+            //    }
 
-                RefreshArtistList();
-                RefreshSongList();
-                RefreshAlbumList();
-            }
-        }
-
-        private void btnClearFilters_Click(object sender, EventArgs e)
-        {
+            //    RefreshArtistList();
+            //    RefreshSongList();
+            //    RefreshAlbumList();
+            //}
+            appData = AppData.Load("data.json");
+            RefreshArtistList();
             RefreshSongList();
+            RefreshAlbumList();
         }
     }
 }
