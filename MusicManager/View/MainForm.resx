@@ -963,6 +963,66 @@
   <data name="&gt;&gt;splitContainer1.Panel1.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <data name="label7.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="label7.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 12pt</value>
+  </data>
+  <data name="label7.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="label7.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 6</value>
+  </data>
+  <data name="label7.Size" type="System.Drawing.Size, System.Drawing">
+    <value>89, 21</value>
+  </data>
+  <data name="label7.TabIndex" type="System.Int32, mscorlib">
+    <value>14</value>
+  </data>
+  <data name="label7.Text" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="&gt;&gt;label7.Name" xml:space="preserve">
+    <value>label7</value>
+  </data>
+  <data name="&gt;&gt;label7.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;label7.Parent" xml:space="preserve">
+    <value>splitContainer1.Panel2</value>
+  </data>
+  <data name="&gt;&gt;label7.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="txtArtistDescription.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Left, Right</value>
+  </data>
+  <data name="txtArtistDescription.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 29</value>
+  </data>
+  <data name="txtArtistDescription.Multiline" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="txtArtistDescription.Size" type="System.Drawing.Size, System.Drawing">
+    <value>388, 77</value>
+  </data>
+  <data name="txtArtistDescription.TabIndex" type="System.Int32, mscorlib">
+    <value>13</value>
+  </data>
+  <data name="&gt;&gt;txtArtistDescription.Name" xml:space="preserve">
+    <value>txtArtistDescription</value>
+  </data>
+  <data name="&gt;&gt;txtArtistDescription.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtArtistDescription.Parent" xml:space="preserve">
+    <value>splitContainer1.Panel2</value>
+  </data>
+  <data name="&gt;&gt;txtArtistDescription.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
   <data name="listViewArtistSongs.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Bottom, Left, Right</value>
   </data>
@@ -970,10 +1030,10 @@
     <value>Segoe UI, 12pt</value>
   </data>
   <data name="listViewArtistSongs.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 32</value>
+    <value>-1, 133</value>
   </data>
   <data name="listViewArtistSongs.Size" type="System.Drawing.Size, System.Drawing">
-    <value>392, 379</value>
+    <value>392, 278</value>
   </data>
   <data name="listViewArtistSongs.TabIndex" type="System.Int32, mscorlib">
     <value>7</value>
@@ -988,7 +1048,7 @@
     <value>splitContainer1.Panel2</value>
   </data>
   <data name="&gt;&gt;listViewArtistSongs.ZOrder" xml:space="preserve">
-    <value>0</value>
+    <value>2</value>
   </data>
   <data name="label2.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -997,7 +1057,7 @@
     <value>Segoe UI, 12pt</value>
   </data>
   <data name="label2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 3</value>
+    <value>3, 109</value>
   </data>
   <data name="label2.Size" type="System.Drawing.Size, System.Drawing">
     <value>173, 21</value>
@@ -1018,7 +1078,7 @@
     <value>splitContainer1.Panel2</value>
   </data>
   <data name="&gt;&gt;label2.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>3</value>
   </data>
   <data name="&gt;&gt;splitContainer1.Panel2.Name" xml:space="preserve">
     <value>splitContainer1.Panel2</value>

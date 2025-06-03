@@ -55,6 +55,7 @@
             comboArtist.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             comboArtist.AutoCompleteSource = AutoCompleteSource.ListItems;
             comboArtist.BackColor = Color.FromArgb(35, 35, 35);
+            comboArtist.DropDownStyle = ComboBoxStyle.DropDownList;
             comboArtist.ForeColor = Color.White;
             comboArtist.FormattingEnabled = true;
             comboArtist.Location = new Point(12, 80);

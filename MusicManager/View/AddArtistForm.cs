@@ -1,15 +1,13 @@
 ﻿using MusicManager.Models;
-using static System.Windows.Forms.LinkLabel;
 
 namespace MusicManager
 {
     public partial class AddArtistForm : Form
     {
+        private readonly AppData appData;
+        private readonly Artist artistToEdit;
+        private readonly bool isEditMode;
         private string selectedImagePath = "";
-
-        private Artist artistToEdit;
-        private bool isEditMode;
-        private AppData appData;
 
         public AddArtistForm(AppData appData)
         {
@@ -17,7 +15,7 @@ namespace MusicManager
             this.appData = appData;
             isEditMode = false;
 
-            LoadDefaultImage();
+            InitializeForm(null);
         }
 
         public AddArtistForm(AppData appData, Artist artistToEdit)
@@ -27,16 +25,19 @@ namespace MusicManager
             this.artistToEdit = artistToEdit;
             isEditMode = true;
 
-            txtArtistName.Text = artistToEdit.Name;
-            txtLink.Text = artistToEdit.ExternalLink ?? "";
-            selectedImagePath = artistToEdit.ImagePath;
+            InitializeForm(artistToEdit);
+        }
 
-            if (File.Exists(selectedImagePath))
+        private void InitializeForm(Artist artist)
+        {
+            txtArtistName.Text = artist?.Name ?? "";
+            txtDescription.Text = artist?.Description ?? "";
+            txtLink.Text = artist?.ExternalLink ?? "";
+            selectedImagePath = artist?.ImagePath ?? "";
+
+            if (!string.IsNullOrWhiteSpace(selectedImagePath) && File.Exists(selectedImagePath))
             {
-                using (var img = Image.FromFile(selectedImagePath))
-                {
-                    pictureBoxArtist.Image = new Bitmap(img);
-                }
+                LoadImage(selectedImagePath);
             }
             else
             {
@@ -46,108 +47,56 @@ namespace MusicManager
 
         private void btnChooseImage_Click(object sender, EventArgs e)
         {
-            using OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp";
+            using OpenFileDialog ofd = new OpenFileDialog
+            {
+                Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp"
+            };
+
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 selectedImagePath = ofd.FileName;
-                using (var img = Image.FromFile(selectedImagePath))
-                {
-                    pictureBoxArtist.Image = new Bitmap(img);
-                }
+                LoadImage(selectedImagePath);
             }
         }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtArtistName.Text))
+            string name = txtArtistName.Text.Trim();
+            string description = txtDescription.Text.Trim();
+            string link = string.IsNullOrWhiteSpace(txtLink.Text) ? null : txtLink.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(name))
             {
                 MessageBox.Show("Please enter an artist name.");
                 return;
             }
 
-            string name = txtArtistName.Text.Trim();
-            string artistLink = string.IsNullOrWhiteSpace(txtLink.Text) ? null : txtLink.Text.Trim();
-            if (!string.IsNullOrWhiteSpace(artistLink) && !Uri.IsWellFormedUriString(artistLink, UriKind.Absolute))
+            if (!string.IsNullOrWhiteSpace(link) && !Uri.IsWellFormedUriString(link, UriKind.Absolute))
             {
                 MessageBox.Show("Please enter a valid URL.");
                 return;
             }
 
-            string imageFileName = Path.Combine("Images", "default_artist.png");
-            string imagesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
-            Directory.CreateDirectory(imagesFolder);
+            string imagePath = SaveImage();
 
-            if (!string.IsNullOrEmpty(selectedImagePath) && File.Exists(selectedImagePath))
+            if (isEditMode)
             {
-                string newFileName;
-                string newPath;
-
-                if (isEditMode)
-                {
-                    newFileName = $"artist_{artistToEdit.Id}" + Path.GetExtension(selectedImagePath);
-                    newPath = Path.Combine(imagesFolder, newFileName);
-
-                    if (!string.Equals(selectedImagePath, newPath, StringComparison.OrdinalIgnoreCase))
-                    {
-                        File.Copy(selectedImagePath, newPath, true);
-                    }
-
-                    artistToEdit.Name = name;
-                    artistToEdit.ExternalLink = artistLink;
-                    artistToEdit.ImagePath = newPath;
-                }
-                else
-                {
-                    newFileName = $"artist_{appData.ArtistIdCounter}" + Path.GetExtension(selectedImagePath);
-                    newPath = Path.Combine(imagesFolder, newFileName);
-                    File.Copy(selectedImagePath, newPath, true);
-
-                    var newArtist = new Artist
-                    {
-                        Id = appData.ArtistIdCounter++,
-                        Name = name,
-                        ImagePath = newPath,
-                        ExternalLink = artistLink
-                    };
-
-                    appData.Artists.Add(newArtist);
-                    appData.ArtistSongs[newArtist.Id] = new List<string>();
-                }
-            }
-            else if (isEditMode)
-            {
-                artistToEdit.Name = name;
-                artistToEdit.ExternalLink = artistLink;
+                UpdateArtist(name, description, link, imagePath);
             }
             else
             {
-                var artist = new Artist
-                {
-                    Id = appData.ArtistIdCounter++,
-                    Name = name,
-                    ImagePath = imageFileName,
-                    ExternalLink = artistLink
-                };
-
-                appData.Artists.Add(artist);
-                appData.ArtistSongs[artist.Id] = new List<string>();
+                CreateArtist(name, description, link, imagePath);
             }
-            appData.Save("data.json");
 
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            appData.Save("data.json");
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.Cancel;
-            this.Close();
-        }
-
-        private void AddArtistForm_Load(object sender, EventArgs e)
-        {
-
+            DialogResult = DialogResult.Cancel;
+            Close();
         }
 
         private void LoadDefaultImage()
@@ -155,8 +104,64 @@ namespace MusicManager
             string defaultPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "default_artist.png");
             if (File.Exists(defaultPath))
             {
-                pictureBoxArtist.Image = new Bitmap(defaultPath);
+                using( var img = Image.FromFile(defaultPath))
+                {
+                    pictureBoxArtist.Image = new Bitmap(img);
+                }
             }
+        }
+
+        private void LoadImage(string path)
+        {
+            if (File.Exists(path))
+            {
+                using(var img = Image.FromFile(path))
+                {
+                    pictureBoxArtist.Image = new Bitmap(img);
+                }
+            }
+        }
+
+        private string SaveImage()
+        {
+            string imagesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
+            Directory.CreateDirectory(imagesFolder);
+
+            if (string.IsNullOrWhiteSpace(selectedImagePath) || !File.Exists(selectedImagePath))
+                return Path.Combine("Images", "default_artist.png");
+
+            string fileName = $"artist_{(isEditMode ? artistToEdit.Id : appData.ArtistIdCounter)}" + Path.GetExtension(selectedImagePath);
+            string newPath = Path.Combine(imagesFolder, fileName);
+
+            if (!string.Equals(selectedImagePath, newPath, StringComparison.OrdinalIgnoreCase))
+            {
+                File.Copy(selectedImagePath, newPath, true);
+            }
+
+            return newPath;
+        }
+
+        private void UpdateArtist(string name, string desc, string link, string imagePath)
+        {
+            artistToEdit.Name = name;
+            artistToEdit.Description = desc;
+            artistToEdit.ExternalLink = link;
+            artistToEdit.ImagePath = imagePath;
+        }
+
+        private void CreateArtist(string name, string desc, string link, string imagePath)
+        {
+            var newArtist = new Artist
+            {
+                Id = appData.ArtistIdCounter++,
+                Name = name,
+                Description = desc,
+                ExternalLink = link,
+                ImagePath = imagePath
+            };
+
+            appData.Artists.Add(newArtist);
+            appData.ArtistSongs[newArtist.Id] = new List<string>();
         }
     }
 }

@@ -36,6 +36,8 @@
             btnCancel = new Button();
             label4 = new Label();
             txtLink = new TextBox();
+            label2 = new Label();
+            txtDescription = new TextBox();
             ((System.ComponentModel.ISupportInitialize)pictureBoxArtist).BeginInit();
             SuspendLayout();
             // 
@@ -45,7 +47,7 @@
             txtArtistName.ForeColor = Color.White;
             txtArtistName.Location = new Point(12, 33);
             txtArtistName.Name = "txtArtistName";
-            txtArtistName.Size = new Size(109, 23);
+            txtArtistName.Size = new Size(156, 23);
             txtArtistName.TabIndex = 0;
             // 
             // label1
@@ -69,9 +71,9 @@
             // btnChooseImage
             // 
             btnChooseImage.BackColor = Color.FromArgb(35, 35, 35);
-            btnChooseImage.Location = new Point(12, 80);
+            btnChooseImage.Location = new Point(12, 190);
             btnChooseImage.Name = "btnChooseImage";
-            btnChooseImage.Size = new Size(109, 23);
+            btnChooseImage.Size = new Size(156, 23);
             btnChooseImage.TabIndex = 3;
             btnChooseImage.Text = "Chose image";
             btnChooseImage.UseVisualStyleBackColor = false;
@@ -103,7 +105,7 @@
             // 
             label4.AutoSize = true;
             label4.Font = new Font("Segoe UI", 12F);
-            label4.Location = new Point(12, 206);
+            label4.Location = new Point(12, 216);
             label4.Name = "label4";
             label4.Size = new Size(39, 21);
             label4.TabIndex = 13;
@@ -113,10 +115,29 @@
             // 
             txtLink.BackColor = Color.FromArgb(35, 35, 35);
             txtLink.ForeColor = Color.White;
-            txtLink.Location = new Point(12, 230);
+            txtLink.Location = new Point(12, 241);
             txtLink.Name = "txtLink";
             txtLink.Size = new Size(349, 23);
             txtLink.TabIndex = 12;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(12, 59);
+            label2.Name = "label2";
+            label2.Size = new Size(67, 15);
+            label2.TabIndex = 15;
+            label2.Text = "Description";
+            // 
+            // txtDescription
+            // 
+            txtDescription.BackColor = Color.FromArgb(35, 35, 35);
+            txtDescription.ForeColor = Color.White;
+            txtDescription.Location = new Point(12, 77);
+            txtDescription.Multiline = true;
+            txtDescription.Name = "txtDescription";
+            txtDescription.Size = new Size(156, 107);
+            txtDescription.TabIndex = 14;
             // 
             // AddArtistForm
             // 
@@ -124,6 +145,8 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(30, 30, 30);
             ClientSize = new Size(391, 319);
+            Controls.Add(label2);
+            Controls.Add(txtDescription);
             Controls.Add(label4);
             Controls.Add(txtLink);
             Controls.Add(btnCancel);
@@ -136,7 +159,6 @@
             Name = "AddArtistForm";
             StartPosition = FormStartPosition.CenterParent;
             Text = "AddArtist";
-            Load += AddArtistForm_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBoxArtist).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -152,5 +174,7 @@
         private Button btnCancel;
         private Label label4;
         private TextBox txtLink;
+        private Label label2;
+        private TextBox txtDescription;
     }
 }

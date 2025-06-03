@@ -1,15 +1,13 @@
 ﻿using MusicManager.Models;
-using static System.Windows.Forms.LinkLabel;
 
 namespace MusicManager
 {
     public partial class AddSongForm : Form
     {
+        private readonly AppData appData;
+        private readonly Song? songToEdit;
+        private readonly bool isEditMode;
         private string selectedImagePath = "";
-
-        private AppData appData;
-        private Song songToEdit;
-        private bool isEditMode;
 
         public AddSongForm(AppData appData)
         {
@@ -17,12 +15,7 @@ namespace MusicManager
             this.appData = appData;
             isEditMode = false;
 
-            comboArtist.DataSource = appData.Artists;
-            comboArtist.DisplayMember = "Name";
-            comboArtist.ValueMember = "Id";
-
-            numericYear.Value = DateTime.Now.Year;
-            LoadDefaultImage();
+            InitializeForm();
         }
 
         public AddSongForm(AppData appData, Song songToEdit)
@@ -32,56 +25,53 @@ namespace MusicManager
             this.songToEdit = songToEdit;
             isEditMode = true;
 
+            InitializeForm(songToEdit);
+        }
+
+        private void InitializeForm(Song? song = null)
+        {
             comboArtist.DataSource = appData.Artists;
             comboArtist.DisplayMember = "Name";
             comboArtist.ValueMember = "Id";
 
-            txtTitle.Text = songToEdit.Title;
-            txtLink.Text = songToEdit.ExternalLink ?? "";
-            numericYear.Value = songToEdit.Year;
-            comboArtist.SelectedValue = songToEdit.ArtistId;
-            selectedImagePath = songToEdit.ImagePath;
+            txtTitle.Text = song?.Title ?? "";
+            txtLink.Text = song?.ExternalLink ?? "";
+            numericYear.Value = song?.Year ?? DateTime.Now.Year;
+            comboArtist.SelectedValue = song?.ArtistId ?? Artist.GetArtistById(appData, 1)?.Id ?? 1;
+            selectedImagePath = song?.ImagePath ?? "";
 
             if (File.Exists(selectedImagePath))
-            {
-                using (var img = Image.FromFile(selectedImagePath))
-                {
-                    pictureBoxSong.Image = new Bitmap(img);
-                }
-            }
+                LoadImage(selectedImagePath);
             else
-            {
                 LoadDefaultImage();
-            }
         }
 
         private void btnChooseImage_Click(object sender, EventArgs e)
         {
-            using OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp";
+            using OpenFileDialog ofd = new()
+            {
+                Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp"
+            };
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 selectedImagePath = ofd.FileName;
-                using (var img = Image.FromFile(selectedImagePath))
-                {
-                    pictureBoxSong.Image = new Bitmap(img);
-                }
+                LoadImage(selectedImagePath);
             }
         }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtTitle.Text))
+            string title = txtTitle.Text.Trim();
+            string link = string.IsNullOrWhiteSpace(txtLink.Text) ? null : txtLink.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(title))
             {
                 MessageBox.Show("Please enter a song title.");
                 return;
             }
 
-            string title = txtTitle.Text.Trim();
-            string songLink = string.IsNullOrWhiteSpace(txtLink.Text) ? null : txtLink.Text.Trim();
-
-            if (!string.IsNullOrWhiteSpace(songLink) && !Uri.IsWellFormedUriString(songLink, UriKind.Absolute))
+            if (!string.IsNullOrWhiteSpace(link) && !Uri.IsWellFormedUriString(link, UriKind.Absolute))
             {
                 MessageBox.Show("Please enter a valid URL (e.g., https://example.com).");
                 return;
@@ -89,99 +79,82 @@ namespace MusicManager
 
             int artistId = (int)comboArtist.SelectedValue;
             int year = (int)numericYear.Value;
-            string imageFileName = Path.Combine("Images", "default_song.png");
-            string imagesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
-            Directory.CreateDirectory(imagesFolder);
+            string imagePath = SaveImage();
 
-            if (!string.IsNullOrEmpty(selectedImagePath) && File.Exists(selectedImagePath))
+            if (isEditMode && songToEdit != null)
             {
-
-                string newFileName;
-                string newPath;
-
-                if (isEditMode)
-                {
-                    newFileName = $"song_{songToEdit.Id}" + Path.GetExtension(selectedImagePath);
-                    newPath = Path.Combine(imagesFolder, newFileName);
-
-                    if (!string.Equals(selectedImagePath, newPath, StringComparison.OrdinalIgnoreCase))
-                    {
-                        File.Copy(selectedImagePath, newPath, true);
-                    }
-
-                    songToEdit.Title = title;
-                    songToEdit.ArtistId = artistId;
-                    songToEdit.Year = year;
-                    songToEdit.ImagePath = newPath;
-                    songToEdit.ExternalLink = songLink;
-                }
-                else
-                {
-                    newFileName = $"song_{appData.SongIdCounter}" + Path.GetExtension(selectedImagePath);
-                    newPath = Path.Combine(imagesFolder, newFileName);
-                    if (!string.Equals(selectedImagePath, newPath, StringComparison.OrdinalIgnoreCase))
-                    {
-                        File.Copy(selectedImagePath, newPath, true);
-                    }
-                    imageFileName = newPath;
-
-
-                    var song = new Song
-                    {
-                        Id = appData.SongIdCounter++,
-                        Title = title,
-                        ArtistId = artistId,
-                        Year = year,
-                        ImagePath = imageFileName,
-                        ExternalLink = songLink
-                    };
-
-                    appData.Songs.Add(song);
-                }
-            }
-            else if (isEditMode)
-            {
-                songToEdit.Title = title;
-                songToEdit.ArtistId = artistId;
-                songToEdit.Year = year;
-                songToEdit.ExternalLink = songLink;
+                UpdateSong(songToEdit, title, artistId, year, link, imagePath);
             }
             else
             {
-                var newSong = new Song
-                {
-                    Id = appData.SongIdCounter++,
-                    Title = title,
-                    ArtistId = artistId,
-                    Year = year,
-                    ImagePath = imageFileName,
-                    ExternalLink = songLink
-                };
-
-                appData.Songs.Add(newSong);
+                CreateSong(title, artistId, year, link, imagePath);
             }
 
             appData.Save("data.json");
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.Cancel;
-            this.Close();
+            DialogResult = DialogResult.Cancel;
+            Close();
         }
 
         private void LoadDefaultImage()
         {
-            string defaultPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "default_song.png");
-            if (File.Exists(defaultPath))
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "default_song.png");
+            LoadImage(path);
+        }
+
+        private void LoadImage(string path)
+        {
+            if (File.Exists(path))
             {
-                using (var img = Image.FromFile(defaultPath))
-                {
-                    pictureBoxSong.Image = new Bitmap(img);
-                }
+                using var img = Image.FromFile(path);
+                pictureBoxSong.Image = new Bitmap(img);
             }
+        }
+
+        private string SaveImage()
+        {
+            string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
+            Directory.CreateDirectory(folder);
+
+            if (string.IsNullOrWhiteSpace(selectedImagePath) || !File.Exists(selectedImagePath))
+                return Path.Combine("Images", "default_song.png");
+
+            string fileName = $"song_{(isEditMode ? songToEdit!.Id : appData.SongIdCounter)}" + Path.GetExtension(selectedImagePath);
+            string newPath = Path.Combine(folder, fileName);
+
+            if (!string.Equals(selectedImagePath, newPath, StringComparison.OrdinalIgnoreCase))
+                File.Copy(selectedImagePath, newPath, true);
+
+            return newPath;
+        }
+
+        private void UpdateSong(Song song, string title, int artistId, int year, string? link, string imagePath)
+        {
+            song.Title = title;
+            song.ArtistId = artistId;
+            song.Year = year;
+            song.ExternalLink = link;
+            song.ImagePath = imagePath;
+        }
+
+        private void CreateSong(string title, int artistId, int year, string? link, string imagePath)
+        {
+            var song = new Song
+            {
+                Id = appData.SongIdCounter++,
+                Title = title,
+                ArtistId = artistId,
+                Year = year,
+                ExternalLink = link,
+                ImagePath = imagePath
+            };
+
+            appData.Songs.Add(song);
         }
     }
 }

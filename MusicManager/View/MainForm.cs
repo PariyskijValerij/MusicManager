@@ -86,6 +86,7 @@ namespace MusicManager
                 appData.ArtistSongs.Remove(selectedId);
             }
 
+            txtArtistDescription.Text = "";
             listViewArtistSongs.Items.Clear();
             imageListArtists.Images.Clear();
             RefreshArtistList();
@@ -113,6 +114,7 @@ namespace MusicManager
 
             if (form.ShowDialog() == DialogResult.OK)
             {
+                txtArtistDescription.Text = "";
                 RefreshArtistList();
             }
         }
@@ -171,8 +173,8 @@ namespace MusicManager
                 return;
             }
 
-            var item = listViewArtists.SelectedItems[0];
-            var song = Song.GetByImageKey(appData, item.ImageKey);
+            int artistId = (int)listViewArtists.SelectedItems[0].Tag;
+            var artist = Artist.GetArtistById(appData, artistId);
 
             if (artist == null)
             {
@@ -238,11 +240,22 @@ namespace MusicManager
 
             if (listViewArtists.SelectedItems.Count == 0)
             {
+                txtArtistDescription.Text = "";
                 return;
             }
 
             int artistId = (int)listViewArtists.SelectedItems[0].Tag;
+            var artist = Artist.GetArtistById(appData, artistId);
             var artistSongsList = appData.Songs.Where(s => s.ArtistId == artistId).OrderBy(s => s.Title);
+
+            if (artist != null)
+            {
+                txtArtistDescription.Text = artist.Description ?? "";
+            }
+            else
+            {
+                txtArtistDescription.Text = "";
+            }
 
             foreach (var song in artistSongsList)
             {
@@ -285,7 +298,8 @@ namespace MusicManager
             }
 
             var item = listViewArtistSongs.SelectedItems[0];
-            var song = Song.GetByImageKey(appData, item.ImageKey);
+            int songId = (int)item.Tag;
+            var song = Song.GetSongById(appData, songId);
 
             if (song == null)
             {
@@ -388,9 +402,9 @@ namespace MusicManager
         }
 
 
-        ////////////
-        ///Songs////
-        ////////////
+        /////////////
+        ////Songs////
+        /////////////
         private void btnAddSong_Click(object sender, EventArgs e)
         {
             var form = new AddSongForm(appData);
@@ -573,9 +587,10 @@ namespace MusicManager
             }
 
             var item = listViewAllSongs.SelectedItems[0];
-            var song = Song.GetByImageKey(appData, item.ImageKey);
+            int songId = (int)item.Tag;
+            var song = Song.GetSongById(appData, songId);
 
-            if(song == null)
+            if (song == null)
             {
                 MessageBox.Show("Song not found.");
                 return;
@@ -689,9 +704,9 @@ namespace MusicManager
         }
 
 
-        /////////////
-        ///Albums////
-        /////////////
+        //////////////
+        ////Albums////
+        //////////////
         private void btnAddAlbum_Click(object sender, EventArgs e)
         {
             var form = new AddAlbumForm(appData);
@@ -847,7 +862,8 @@ namespace MusicManager
             }
 
             var item = listViewAlbumSongs.SelectedItems[0];
-            var song = Song.GetByImageKey(appData, item.ImageKey);
+            int songId = (int)item.Tag;
+            var song = Song.GetSongById(appData, songId);
 
             if (song == null)
             {

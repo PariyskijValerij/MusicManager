@@ -64,6 +64,8 @@
             imageListArtists = new ImageList(components);
             btnDeleteArtist = new Button();
             btnAddArtist = new Button();
+            label7 = new Label();
+            txtArtistDescription = new TextBox();
             listViewArtistSongs = new ListView();
             label2 = new Label();
             tabAlbums = new TabPage();
@@ -344,6 +346,8 @@
             // 
             // splitContainer1.Panel2
             // 
+            splitContainer1.Panel2.Controls.Add(label7);
+            splitContainer1.Panel2.Controls.Add(txtArtistDescription);
             splitContainer1.Panel2.Controls.Add(listViewArtistSongs);
             splitContainer1.Panel2.Controls.Add(label2);
             // 
@@ -420,6 +424,20 @@
             btnAddArtist.Name = "btnAddArtist";
             btnAddArtist.UseVisualStyleBackColor = false;
             btnAddArtist.Click += btnAddArtist_Click;
+            // 
+            // label7
+            // 
+            resources.ApplyResources(label7, "label7");
+            label7.Name = "label7";
+            // 
+            // txtArtistDescription
+            // 
+            resources.ApplyResources(txtArtistDescription, "txtArtistDescription");
+            txtArtistDescription.BackColor = Color.FromArgb(35, 35, 35);
+            txtArtistDescription.BorderStyle = BorderStyle.None;
+            txtArtistDescription.ForeColor = Color.White;
+            txtArtistDescription.Name = "txtArtistDescription";
+            txtArtistDescription.ReadOnly = true;
             // 
             // listViewArtistSongs
             // 
@@ -564,5 +582,7 @@
         private TextBox txtAlbumFilter;
         private Button btnClearAlbumsFilter;
         private Button btnFilterAlbums;
+        private Label label7;
+        private TextBox txtArtistDescription;
     }
 }

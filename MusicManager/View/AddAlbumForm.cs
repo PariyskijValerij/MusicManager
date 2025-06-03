@@ -4,9 +4,9 @@ namespace MusicManager
 {
     public partial class AddAlbumForm : Form
     {
-        private AppData appData;
-        private Album albumToEdit;
-        private bool isEditMode;
+        private readonly AppData appData;
+        private readonly Album? albumToEdit;
+        private readonly bool isEditMode;
         private string selectedImagePath = "";
 
         public AddAlbumForm(AppData appData)
@@ -15,8 +15,7 @@ namespace MusicManager
             this.appData = appData;
             isEditMode = false;
 
-            InitArtistsCombo();
-            LoadDefaultImage();
+            InitializeForm();
         }
 
         public AddAlbumForm(AppData appData, Album albumToEdit)
@@ -26,102 +25,72 @@ namespace MusicManager
             this.albumToEdit = albumToEdit;
             isEditMode = true;
 
-            InitArtistsCombo();
+            InitializeForm(albumToEdit);
+        }
 
-            txtTitle.Text = albumToEdit.Title;
-            selectedImagePath = albumToEdit.ImagePath;
+        private void InitializeForm(Album? album = null)
+        {
+            InitializeArtistsCombo();
+
+            txtTitle.Text = album?.Title ?? "";
+            selectedImagePath = album?.ImagePath ?? "";
 
             if (File.Exists(selectedImagePath))
-            {
-                using (var img = Image.FromFile(selectedImagePath))
-                {
-                    pictureBoxImage.Image = new Bitmap(img);
-                }
-            }
+                LoadImage(selectedImagePath);
             else
-            {
                 LoadDefaultImage();
-            }
 
-            comboArtist.SelectedValue = albumToEdit.ArtistId ?? 0;
+            comboArtist.SelectedValue = album?.ArtistId ?? 0;
         }
 
         private void btnChooseImage_Click(object sender, EventArgs e)
         {
-            using OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp";
+            using OpenFileDialog ofd = new()
+            {
+                Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp"
+            };
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 selectedImagePath = ofd.FileName;
-                using (var img = Image.FromFile(selectedImagePath))
-                {
-                    pictureBoxImage.Image = new Bitmap(img);
-                }
+                LoadImage(selectedImagePath);
             }
         }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtTitle.Text))
+            string title = txtTitle.Text.Trim();
+            if (string.IsNullOrEmpty(title))
             {
                 MessageBox.Show("Please enter an album title.");
                 return;
             }
 
-            string title = txtTitle.Text.Trim();
             int selectedArtistId = (int)comboArtist.SelectedValue;
             int? artistId = selectedArtistId == 0 ? null : selectedArtistId;
-            string imageFileName = Path.Combine("Images", "default_album.png");
-            string imageFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
-            Directory.CreateDirectory(imageFolder);
+            string imagePath = SaveImage();
 
-            if (!string.IsNullOrEmpty(selectedImagePath) && File.Exists(selectedImagePath))
-            {
-                string newFileName = $"album_{(isEditMode ? albumToEdit.Id : appData.AlbumIdCounter)}{Path.GetExtension(selectedImagePath)}";
-                string newPath = Path.Combine(imageFolder, newFileName);
-
-                if (!string.Equals(selectedImagePath, newPath, StringComparison.OrdinalIgnoreCase))
-                {
-                    File.Copy(selectedImagePath, newPath, true);
-                }
-                imageFileName = newPath;
-            }
-
-            if (isEditMode)
-            {
-                albumToEdit.Title = title;
-                albumToEdit.ArtistId = artistId;
-                albumToEdit.ImagePath = imageFileName;
-            }
+            if (isEditMode && albumToEdit != null)
+                UpdateAlbum(albumToEdit, title, artistId, imagePath);
             else
-            {
-                var album = new Album
-                {
-                    Id = appData.AlbumIdCounter++,
-                    Title = title,
-                    ArtistId = artistId,
-                    ImagePath = imageFileName
-                };
-                appData.Albums.Add(album);
-            }
+                CreateAlbum(title, artistId, imagePath);
 
             appData.Save("data.json");
             DialogResult = DialogResult.OK;
-            this.Close();
+            Close();
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.Cancel;
-            this.Close();
+            DialogResult = DialogResult.Cancel;
+            Close();
         }
 
-        private void InitArtistsCombo()
+        private void InitializeArtistsCombo()
         {
             var artistsWithNone = new List<Artist>
             {
-                new Artist { Id = 0, Name = "Без виконавця" }
+                new Artist { Id = 0, Name = "Unknown artist" }
             };
             artistsWithNone.AddRange(appData.Artists);
 
@@ -132,9 +101,53 @@ namespace MusicManager
 
         private void LoadDefaultImage()
         {
-            string defaultPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "default_album.png");
-            if (File.Exists(defaultPath))
-                pictureBoxImage.Image = new Bitmap(defaultPath);
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "default_album.png");
+            LoadImage(path);
+        }
+
+        private void LoadImage(string path)
+        {
+            if (File.Exists(path))
+            {
+                using var img = Image.FromFile(path);
+                pictureBoxImage.Image = new Bitmap(img);
+            }
+        }
+
+        private string SaveImage()
+        {
+            string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
+            Directory.CreateDirectory(folder);
+
+            if (string.IsNullOrWhiteSpace(selectedImagePath) || !File.Exists(selectedImagePath))
+                return Path.Combine("Images", "default_album.png");
+
+            string fileName = $"album_{(isEditMode ? albumToEdit!.Id : appData.AlbumIdCounter)}" + Path.GetExtension(selectedImagePath);
+            string newPath = Path.Combine(folder, fileName);
+
+            if (!string.Equals(selectedImagePath, newPath, StringComparison.OrdinalIgnoreCase))
+                File.Copy(selectedImagePath, newPath, true);
+
+            return newPath;
+        }
+
+        private void UpdateAlbum(Album album, string title, int? artistId, string imagePath)
+        {
+            album.Title = title;
+            album.ArtistId = artistId;
+            album.ImagePath = imagePath;
+        }
+
+        private void CreateAlbum(string title, int? artistId, string imagePath)
+        {
+            var album = new Album
+            {
+                Id = appData.AlbumIdCounter++,
+                Title = title,
+                ArtistId = artistId,
+                ImagePath = imagePath
+            };
+            appData.Albums.Add(album);
         }
     }
 }
