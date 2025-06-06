@@ -104,7 +104,7 @@ namespace MusicManager
             string defaultPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "default_artist.png");
             if (File.Exists(defaultPath))
             {
-                using( var img = Image.FromFile(defaultPath))
+                using (var img = Image.FromFile(defaultPath))
                 {
                     pictureBoxArtist.Image = new Bitmap(img);
                 }
@@ -115,7 +115,7 @@ namespace MusicManager
         {
             if (File.Exists(path))
             {
-                using(var img = Image.FromFile(path))
+                using (var img = Image.FromFile(path))
                 {
                     pictureBoxArtist.Image = new Bitmap(img);
                 }

@@ -84,7 +84,7 @@
             btnChooseImage.Name = "btnChooseImage";
             btnChooseImage.Size = new Size(149, 23);
             btnChooseImage.TabIndex = 5;
-            btnChooseImage.Text = "Chose image";
+            btnChooseImage.Text = "Choose image";
             btnChooseImage.UseVisualStyleBackColor = false;
             btnChooseImage.Click += btnChooseImage_Click;
             // 

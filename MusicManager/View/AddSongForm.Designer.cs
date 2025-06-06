@@ -102,7 +102,7 @@
             numericYear.Font = new Font("Segoe UI", 9F);
             numericYear.ForeColor = Color.White;
             numericYear.Location = new Point(11, 145);
-            numericYear.Maximum = new decimal(new int[] { 2100, 0, 0, 0 });
+            numericYear.Maximum = DateTime.Now.Year;
             numericYear.Minimum = new decimal(new int[] { 1900, 0, 0, 0 });
             numericYear.Name = "numericYear";
             numericYear.Size = new Size(148, 23);
@@ -125,7 +125,7 @@
             btnChooseImage.Name = "btnChooseImage";
             btnChooseImage.Size = new Size(149, 23);
             btnChooseImage.TabIndex = 7;
-            btnChooseImage.Text = "Chose image";
+            btnChooseImage.Text = "Choose image";
             btnChooseImage.UseVisualStyleBackColor = false;
             btnChooseImage.Click += btnChooseImage_Click;
             // 

@@ -211,7 +211,7 @@
     <value>14</value>
   </data>
   <data name="btnFilterAlbums.Text" xml:space="preserve">
-    <value>Filter Album</value>
+    <value>Filter Albums</value>
   </data>
   <data name="&gt;&gt;btnFilterAlbums.Name" xml:space="preserve">
     <value>btnFilterAlbums</value>
@@ -436,7 +436,7 @@
     <value>4</value>
   </data>
   <data name="btnAddSongToAlbum.Text" xml:space="preserve">
-    <value>Add Song To Album</value>
+    <value>Add Song to Album</value>
   </data>
   <data name="&gt;&gt;btnAddSongToAlbum.Name" xml:space="preserve">
     <value>btnAddSongToAlbum</value>

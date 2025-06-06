@@ -5,7 +5,6 @@ namespace MusicManager
     public partial class MainForm : Form
     {
         private AppData appData;
-        private Artist artist;
 
         public MainForm()
         {
@@ -581,7 +580,7 @@ namespace MusicManager
 
         private void listViewAllSongs_DoubleClick(object sender, EventArgs e)
         {
-            if(listViewAllSongs.SelectedItems.Count == 0)
+            if (listViewAllSongs.SelectedItems.Count == 0)
             {
                 return;
             }
@@ -596,7 +595,7 @@ namespace MusicManager
                 return;
             }
 
-            if(string.IsNullOrWhiteSpace(song.ExternalLink))
+            if (string.IsNullOrWhiteSpace(song.ExternalLink))
             {
                 MessageBox.Show("This song is not linked to any external source.");
                 return;
@@ -610,7 +609,7 @@ namespace MusicManager
                     UseShellExecute = true
                 });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Failed to open link: {ex.Message}");
             }

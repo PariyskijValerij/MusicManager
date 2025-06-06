@@ -121,7 +121,7 @@ namespace MusicManager
             int selectedSongId = (int)listViewSongs.SelectedItems[0].Tag;
             if (existingSongIds.Contains(selectedSongId))
             {
-                MessageBox.Show("This song is already selected.");
+                MessageBox.Show("This song is already in album.");
                 return;
             }
 

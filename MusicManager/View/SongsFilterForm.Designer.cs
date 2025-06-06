@@ -60,7 +60,7 @@
             comboArtist.FormattingEnabled = true;
             comboArtist.Location = new Point(12, 80);
             comboArtist.Name = "comboArtist";
-            comboArtist.Size = new Size(121, 23);
+            comboArtist.Size = new Size(210, 23);
             comboArtist.TabIndex = 1;
             // 
             // label1

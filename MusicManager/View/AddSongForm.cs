@@ -71,6 +71,12 @@ namespace MusicManager
                 return;
             }
 
+            if (comboArtist.SelectedItem == null)
+            {
+                MessageBox.Show("Please select artist.");
+                return;
+            }
+
             if (!string.IsNullOrWhiteSpace(link) && !Uri.IsWellFormedUriString(link, UriKind.Absolute))
             {
                 MessageBox.Show("Please enter a valid URL (e.g., https://example.com).");
