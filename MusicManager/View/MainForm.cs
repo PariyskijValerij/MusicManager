@@ -1117,32 +1117,6 @@ namespace MusicManager
 
         private void LoadData()
         {
-            //if (File.Exists("data.json"))
-            //{
-            //    string json = File.ReadAllText("data.json");
-            //    var appData = JsonConvert.DeserializeObject<AppData>(json);
-
-            //    this.artists = appData.Artists ?? new List<Artist>();
-            //    this.artistSongs = appData.ArtistSongs ?? new Dictionary<int, List<string>>();
-            //    this.songs = appData.Songs ?? new List<Song>();
-            //    this.artistIdCounter = appData.ArtistIdCounter;
-            //    this.songIdCounter = appData.SongIdCounter;
-            //    this.albums = appData.Albums ?? new List<Album>();
-            //    this.albumSongLinks = appData.AlbumSongLinks ?? new List<AlbumSongLink>();
-            //    this.albumIdCounter = appData.AlbumIdCounter;
-
-            //    foreach (var album in this.albums)
-            //    {
-            //        if (album.ArtistId == 0)
-            //        {
-            //            album.ArtistId = null;
-            //        }
-            //    }
-
-            //    RefreshArtistList();
-            //    RefreshSongList();
-            //    RefreshAlbumList();
-            //}
             appData = AppData.Load("data.json");
             RefreshArtistList();
             RefreshSongList();
